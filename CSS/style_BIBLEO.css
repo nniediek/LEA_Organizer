@@ -1,0 +1,129 @@
+/*Allgemein*/
+
+#wrapper {
+	width: 100%;
+	min-width: 360px;
+	height: 100%;
+	font-family: Arial;
+	display:block;
+}
+
+p {
+	font-size: 30px;
+	margin: 0;
+	padding: 0;
+}
+
+.username{
+	color:grey;
+	font-size:30px;
+	overflow: hidden;
+	width:210px;
+}
+
+.usercont{
+	float:left;
+}
+
+.logocont{
+	width:150px;
+	float:right;
+}
+
+#logout {
+	margin-top: 5px;
+	float: right;
+}
+
+.logo_small{
+	width:150px;
+	height:auto;
+	float:right;
+}
+
+.logo {
+	width: 100%;
+	height: auto;
+	margin: auto;
+	margin-bottom: 50px;
+}
+
+.button_s {
+	
+}
+
+.button_m {
+	width: 150px;
+	height: 40px;
+}
+
+.button_l {
+	
+}
+
+.button_100 {
+	width:100%;
+	height: 40px;
+}
+
+/*Login*/
+#login {
+	width: 70%;
+	height: 100%;
+	margin: auto;
+	text-align: center;
+	display: block;
+}
+
+fieldset {
+	margin: auto;
+	width: 30%;
+	border:transparent;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+label {
+	display: block;
+	float: left;
+}
+
+/*LEA-Manager Startbildschirm*/
+
+#overview_panel{	
+	margin:auto;
+	margin-top:50px;
+	text-align:center;
+	width:50%;
+	min-width:357px;
+	display:block;
+	padding:5px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+.LEAcontainer{
+	width:100%;
+	height:400px;
+	overflow-y:scroll;
+}
+
+.LEA{
+	display:block;
+	margin:5px;
+	padding:5px;
+}
+
+.date{
+	color:grey;
+	font-size:20px;
+}
+
+/*Lea-Manager LEA-Übersicht*/
+
+#ms_table, #dl_select, #team_overview, #tl_students{
+	border:1px solid black;
+	margin:2px;
+}
+
+#ms_table{
+	
+}
