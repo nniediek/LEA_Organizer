@@ -5,7 +5,7 @@
 	include 'team.php';
 	include 'database.php';
 	
-	$dbconn = new database();
+	$database = new database();
 	$leamanager = new LEAManager();
 	$instructor = new Instructor();
 	$student = new Student();
@@ -13,17 +13,16 @@
 	
 ?>
 
-
-
 <html>
     <head>
         <title>BIBLEO LEA-Organizer</title>
         <meta charset="UTF-8" />
         <link href="CSS/style_BIBLEO.css" rel="stylesheet" type="text/css" />
+		<link href="CSS/style.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
         <div id="wrapper">
-			<main>
+			
 <?php
 	$do = "";
     if (isset($_POST["submit"]) || $_SERVER["REQUEST_METHOD"] == "POST") {
@@ -41,12 +40,18 @@
 			break;	
 		case "team": $team->showHome();
 			break;
-		case "addLEA": $leamanager->showLeaHinzufuegen();
+		case "addLEA": $leamanager->showCreateLea();
 			break;
-		case "readDB": var_dump($dbconn->selectALL('LEA'));
+		case "readDB": var_dump($database->selectALL('LEA'));
 			break;
 		case "logout": logout();
-			break;			
+			break;	
+		case "saveLEA" : $leamanager->showLeaHinzufuegen();
+			break; 			
+		case "leahinzufuegen": $leamanager->showLeaHinzufuegen();
+			break;		
+		case "createTeam": $student->showManageTeam();
+			break;	
         default: showLogin();
             break; 
 	}			
@@ -67,11 +72,16 @@
 						</br>
 						</br>
 						<input type="submit" value="Login">
-						<a href="?do=leamanager">FORCE LOGIN LM</a>
-						<a href="?do=dozent">FORCE LOGIN D</a>
-						<a href="?do=studi">FORCE LOGIN S</a>
-						<a href="?do=team">FORCE LOGIN T</a>
-						<a href="?do=readDB">FORCE LOGIN T</a>
+						<hr>
+						<a href="?do=leamanager">FORCE LOGIN LEAManager</a>
+						<hr>
+						<a href="?do=instructor">FORCE LOGIN Instructor</a>
+						<hr>
+						<a href="?do=student">FORCE LOGIN Student</a>
+						<hr>
+						<a href="?do=team">FORCE LOGIN Team</a>
+						<hr>
+						<a href="?do=readDB">proto connect to db</a>
 					</fieldset>
 				</form>
 			</div>';

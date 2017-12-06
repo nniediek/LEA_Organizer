@@ -1,7 +1,6 @@
 <?php 
 	class Instructor {
 		
-		
 		public function showHome() {
 			echo '<p>
                    <h1> DOZENT home </h1>
