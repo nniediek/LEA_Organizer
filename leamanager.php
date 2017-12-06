@@ -1,5 +1,5 @@
 <?php 
-	class Leamanager {
+	class LEAManager {
 	
 		public function showHome() {
 		
