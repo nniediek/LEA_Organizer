@@ -21,25 +21,33 @@
         <div id="wrapper">
 			<main>
 <?php
-	/*$do = "";
+	$do = "";
     if (isset($_POST["submit"]) || $_SERVER["REQUEST_METHOD"] == "POST") {
         $do = (isset($_POST['do'])) ? $_POST['do'] : "";
     }
     else {
-        $do = (isset($_GET['do'])) ? $_GET['do'] : ""; */
-    }		
+	$do = (isset($_GET['do'])) ? $_GET['do'] : ""; }
+    	
 
 	switch ($do){
+		case "saveLEA" : $leamanager->showLeaHinzufuegen();
+			break; 
         case "leamanager": $leamanager->showHome();
+			break;
+		case "LEA hinzuf&uuml;gen": $leamanager->showCreateLea(); 
+			break;
+		case "addLEA": $leamanager->showCreateLea();
 			break;
 		case "dozent": $dozent->showHome();
 			break;	
-		case "studi": $studi->showHome();
+		case "studi": $studi->showCreateTeam();
 			break;	
 		case "team": $team->showHome();
 			break;
 		case "leahinzufuegen": $leamanager->showLeaHinzufuegen();
-			break;				
+			break;		
+		case "createTeam": $studi->showManageTeam();
+			break;
         default: showLogin();
             break; 
 	}			

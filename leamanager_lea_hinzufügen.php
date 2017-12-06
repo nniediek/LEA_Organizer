@@ -1,0 +1,94 @@
+<?php
+class leamanager2{
+
+	function __construct()
+	{
+		
+	}
+
+	function showForm()
+	{
+		echo '
+		<!DOCTYPE html>
+
+
+		<html>
+
+			<head>
+				<title> </title>
+				<meta charset="UTF-8">
+				<link href="style.css" rel="stylesheet" type="text/css"/>
+			</head>
+			
+			<body>
+				<div id="wrapper">
+					<header>
+						<div class="usercont">
+							<p>Eingeloggt als:</p>
+							<div class="username">
+								&lt;Username&gt;
+							</div>
+						</div>
+						<div class="logocont">
+							<img src="img/logo.png" class="logo_small">
+							<input type="button" id="logout" class="button_m" value="Logout">
+						</div>
+						<div style="clear: both"></div>
+					</header>
+					
+					<input type="button" class="button_m floatR" value="Zur&uuml;ck"/>
+					<div id="addLeaDiv">			
+						<form id="addLeaForm" method="POST">
+							<h1 id="title">LEA Titel</h1>
+							<div id="available">
+							Verf&uuml;gbare Klassen:					
+							</div>
+							<div id="selected">
+								Ausgew&auml;hlte Klassen:
+							</div>
+							<div id="classes">
+								<select id="aClasses" class="LeaFormLeft" size="3">
+									<option>IBD2H16A</option>
+									<option>IBW2H16A</option>
+									<option>IBM2H16A</option>
+								</select>
+								<select id="rClasses" class="LeaFormRight" size="3">
+									<option></option>
+									<option></option>
+									<option></option>
+								</select>
+							</div>
+							
+							<div id="time">
+								<div class="div40 floatL">
+									Von:<br/><input type="date" id="from"/>
+								</div>
+								<div class="div40 floatR">
+									Bis:<br/><input type="date" id="till"/>
+								</div>
+							</div>
+							
+							<div id="milestones">
+								<div id="ms_left">
+									<select id="ms_list" class="LeaFormLeft" size="3">
+										<option>Meilenstein 1</option>
+										<option>Meilenstein 2</option>
+										<option>Meilenstein 3</option>
+									</select>
+								</div>
+								<div id="ms_right">
+									<input type="button" id="AddMilestone" class="button_100_100" value="Meilenstein hinzuf&uuml;gen"/>
+								</div>
+							</div>
+							
+							<input type="submit" class="button_m" value="Speichern"/>
+						</form>
+						
+					</div>
+				</div>
+			</body>
+			
+		</html>';
+	}
+}
+?>
