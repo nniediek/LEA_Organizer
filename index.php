@@ -1,4 +1,8 @@
 <?php
+	
+	session_start();
+	$_SESSION['id'] = "00001";
+	
 	include 'leamanager.php';
 	include 'instructor.php';
 	include 'student.php';
@@ -31,6 +35,7 @@
     else {
         $do = (isset($_GET['do'])) ? $_GET['do'] : ""; 
     }		
+	
 	switch ($do){
         case "leamanager": $leamanager->showHome();
 			break;
@@ -45,7 +50,9 @@
 		case "readDB": var_dump($database->selectALL('LEA'));
 			break;
 		case "logout": logout();
-			break;	
+			break;
+		case "loginUser": login();
+			break;			
 		case "saveLEA" : $leamanager->showLeaHinzufuegen();
 			break; 			
 		case "leahinzufuegen": $leamanager->showLeaHinzufuegen();
@@ -54,13 +61,15 @@
 			break;	
         default: showLogin();
             break; 
-	}			
+	}
+	
+	
     function showLogin() {
 		
         echo '<div id="login">
 				<img src="img/logo.png" class="logo">
 				<h2>LEO der LEA-Organizer</h2>
-				<form id="login_form">
+				<form id="login_form" action="" method="POST">
 					<fieldset>
 						Username
 						</br>
@@ -68,10 +77,15 @@
 						</br>
 						Password 
 						</br>
-						<input type="text" name="password" id="password">
+						<input type="password" name="password" id="password">
 						</br>
 						</br>
+						<input type="hidden" name="do" value="loginUser" >
 						<input type="submit" value="Login">
+						
+						</form>
+						
+						
 						<hr>
 						<a href="?do=leamanager">FORCE LOGIN LEAManager</a>
 						<hr>
@@ -82,27 +96,88 @@
 						<a href="?do=team">FORCE LOGIN Team</a>
 						<hr>
 						<a href="?do=readDB">proto connect to db</a>
+						
 					</fieldset>
-				</form>
+				
 			</div>';
-    }
+		}
 	
-	function logout(){
+	 function logout(){
+	
+	
 		
 	// sets cookie expiry date in the past to remove them
-		foreach ($_COOKIE as $key => $value){
+		
+		/*foreach ($_SESSION as $key => $value){
 				
 			setcookie($key, $value, time() - 3600); 
-		}
+		}*/
+	
 	//  destroys all of the data associated with the current session
 
-		// session_destroy();
+		session_destroy();
 		
-		// session_unset(); 
+		$_SESSION = array();
 		
-	
+		/*foreach ($_SESSION as $key => $value){
+				
+			echo $key . ": " . $value;
+		} */
+		
 		showLogin();
 	}
+	
+	/*public function login(){
+		
+		/*$res = $this->db->selectAllUserData($_POST['username']);
+		
+		if($res->pw == $_POST['pw'] && $res->username == $_POST['username']){
+				//createSession($res->id);
+				echo 'success! now logged in as ' . $res->username;
+			
+
+		if()			
+			
+        } 
+		
+	} */
+		
+	 function login(){
+		
+		$username = $_POST['username'];
+		$password = $_POST['password'];
+		
+		if($username == "" || $password == ""  ){
+			
+			echo '<script> console.log("etwas ist leer")</script>';
+			showLogin();
+		}else{
+			
+		
+		$ldap_address = "ldap://pb.bib.de";
+		$domain = "PB";
+		$dn = "DC=pb,DC=bib,DC=de";
+		$ldap_port = 389;
+		
+		
+		if ($connect = ldap_connect($ldap_address, $ldap_port)) {
+   // Verbindung erfolgreich
+			ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, 3);
+			ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
+
+	// Authentifizierung des Benutzers
+			if (@$bind = ldap_bind($connect, $domain . "\\" . $username, $password)) {
+				echo'Login erfolgreich';
+		ldap_close($connect);
+      
+			}else{
+				echo '<script> console.log("loginversuch fehlgeschlagen")</script>';
+				showLogin();
+				ldap_close($connect);
+			}
+		}
+		}
+	 }
 ?>
 			</main>
         </div>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<title> </title>
+		<meta charset="UTF-8">
+		<link href="CSS/style.css" rel="stylesheet" type="text/css"/>
+	</head>	
+	<body>
+		<div id="wrapper">
+			<header>
+				<div class="usercont">
+					<p>Eingeloggt als:</p>
+					<div class="username">
+						&lt;Username&gt;
+					</div>
+				</div>
+				<div class="logocont">
+					<img src="img/logo.png" class="logo_small">
+					<input type="button" id="logout" class="button_m" value="Logout">
+				</div>
+				<div style="clear: both"></div>
+			</header>	
+			
+			<form id="addTeam" method="get">	
+				<h1>Team hinzufügen</h1>
+				<div id="available">
+					Verf&uuml;gbare Studenten:					
+				</div>
+				<div id="selected">
+					Ausgew&auml;hlte Studenten:
+				</div>
+				<input type="search" name="students" list="students" placeholder="Studenten ausw&auml;hlen" id="aStudents" class="div40a" size="3">
+				<datalist id="students">
+					<option>Student 1</option>
+					<option>Student 2</option>
+					<option>Student 3</option>
+				</datalist>
+				<div id="move">
+					<input type="button" id="moveBtn" class="button_s" value=">">
+				</div>
+				<select id="rStudents" name="rStudents" class="div40a" size="3" multiple>
+					<option>S1</option>
+					<option>S2</option>
+					<option>S3</option>
+				</select>
+				<input type="submit" id="submitTeam" class="button_l center" value="Team erstellen"/>
+			</form>
+		</div>
+	</body>
+	
+</html>
