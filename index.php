@@ -3,17 +3,18 @@
 	session_start();
 	$_SESSION['id'] = "00001";
 	
-	include 'leamanager.php';
-	include 'instructor.php';
-	include 'student.php';
-	include 'team.php';
-	include 'database.php';
+	include 'classes/user.php';
+	include 'classes/leamanager.php';
+	include 'classes/instructor.php';
+	include 'classes/student.php';
+	include 'classes/project.php';
 	
-	$database = new database();
-	$leamanager = new LEAManager();
-	$instructor = new Instructor();
-	$student = new Student();
-	$team = new Team();
+	
+
+	$leamanager = new LEAManager('testuser', 'hans', 'meier', 'hans.hans@hans.hans');
+	$instructor;
+	$student;
+	$project;
 	
 ?>
 
@@ -39,26 +40,28 @@
 	switch ($do){
         case "leamanager": $leamanager->showHome();
 			break;
+	    case "addLEA": $leamanager->showCreateLea();
+			break;
+		case "saveLEA": $leamanager->saveLEA();
+			
 		case "instructor": $instructor->showHome();
-			break;	
+			break;
+			
 		case "student": $student->showHome();
+			break;
+		case "createProject": $student->showManageProject();
 			break;	
-		case "team": $team->showHome();
+			
+		case "project": $project->showHome();
 			break;
-		case "addLEA": $leamanager->showCreateLea();
-			break;
+
 		case "readDB": var_dump($database->selectALL('LEA'));
 			break;
 		case "logout": logout();
 			break;
 		case "loginUser": login();
-			break;			
-		case "saveLEA" : $leamanager->showLeaHinzufuegen();
-			break; 			
-		case "leahinzufuegen": $leamanager->showLeaHinzufuegen();
-			break;		
-		case "createTeam": $student->showManageTeam();
-			break;	
+			break;					
+
         default: showLogin();
             break; 
 	}
@@ -93,7 +96,7 @@
 						<hr>
 						<a href="?do=student">FORCE LOGIN Student</a>
 						<hr>
-						<a href="?do=team">FORCE LOGIN Team</a>
+						<a href="?do=project">FORCE LOGIN Project</a>
 						<hr>
 						<a href="?do=readDB">proto connect to db</a>
 						
@@ -102,9 +105,7 @@
 			</div>';
 		}
 	
-	 function logout(){
-	
-	
+	function logout(){
 		
 	// sets cookie expiry date in the past to remove them
 		
