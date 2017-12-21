@@ -1,7 +1,12 @@
 <?php
 	
 	session_start();
-	$_SESSION['id'] = "00001";
+	
+		if (isset($_SESSION["username"]) && isset($_SESSION["password"])){ 
+		
+			$do = login($_SESSION["username"], $_SESSION["password"]);
+			
+		}
 	
 	include 'classes/user.php';
 	include 'classes/leamanager.php';
@@ -24,11 +29,18 @@
         <meta charset="UTF-8" />
         <link href="CSS/style_BIBLEO.css" rel="stylesheet" type="text/css" />
 		<link href="CSS/style.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
     </head>
     <body>
         <div id="wrapper">
 			
 <?php
+
+	if (isset($_SESSION["username"])){
+		echo $_SESSION["username"];
+	}
+	
 	$do = "";
     if (isset($_POST["submit"]) || $_SERVER["REQUEST_METHOD"] == "POST") {
         $do = (isset($_POST['do'])) ? $_POST['do'] : "";
@@ -42,7 +54,7 @@
 			break;
 	    case "addLEA": $leamanager->showCreateLea();
 			break;
-		case "saveLEA": $leamanager->saveLEA();
+		case "insertLEAData": $leamanager->saveLEA();
 			
 		case "instructor": $instructor->showHome();
 			break;
@@ -59,8 +71,12 @@
 			break;
 		case "logout": logout();
 			break;
-		case "loginUser": login();
-			break;					
+		case "loginUser": login($_POST["username"], $_POST["password"]);
+			$do = $leamanager->showHome();
+			//if permission = 1  ==> $student->showHome();
+			//if permission = 2  ==> $dozent->showHome();
+			//if permission = 3	 ==> $leamanager->showHome();
+			break;							
 
         default: showLogin();
             break; 
@@ -106,47 +122,13 @@
 		}
 	
 	function logout(){
-		
-	// sets cookie expiry date in the past to remove them
-		
-		/*foreach ($_SESSION as $key => $value){
-				
-			setcookie($key, $value, time() - 3600); 
-		}*/
-	
-	//  destroys all of the data associated with the current session
 
-		session_destroy();
-		
-		$_SESSION = array();
-		
-		/*foreach ($_SESSION as $key => $value){
-				
-			echo $key . ": " . $value;
-		} */
-		
+		session_destroy();		
+		$_SESSION = array();		
 		showLogin();
 	}
 	
-	/*public function login(){
-		
-		/*$res = $this->db->selectAllUserData($_POST['username']);
-		
-		if($res->pw == $_POST['pw'] && $res->username == $_POST['username']){
-				//createSession($res->id);
-				echo 'success! now logged in as ' . $res->username;
-			
-
-		if()			
-			
-        } 
-		
-	} */
-		
-	 function login(){
-		
-		$username = $_POST['username'];
-		$password = $_POST['password'];
+	function login($username, $password){
 		
 		if($username == "" || $password == ""  ){
 			
@@ -162,15 +144,15 @@
 		
 		
 		if ($connect = ldap_connect($ldap_address, $ldap_port)) {
-   // Verbindung erfolgreich
+			// Verbindung erfolgreich
 			ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, 3);
 			ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
 
-	// Authentifizierung des Benutzers
+				// Authentifizierung des Benutzers
 			if (@$bind = ldap_bind($connect, $domain . "\\" . $username, $password)) {
-				echo'Login erfolgreich';
-		ldap_close($connect);
-      
+				//echo'Login erfolgreich';
+				startSession($username, $password);
+				ldap_close($connect);
 			}else{
 				echo '<script> console.log("loginversuch fehlgeschlagen")</script>';
 				showLogin();
@@ -178,6 +160,13 @@
 			}
 		}
 		}
+	 }
+	 
+	 function startSession($username, $password){
+		 
+		
+		 $_SESSION["username"] = $username;
+		 $_SESSION["password"] = $password;
 	 }
 ?>
 			</main>

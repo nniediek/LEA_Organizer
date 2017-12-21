@@ -24,66 +24,18 @@ class LEAmanager extends User{
 								
 								</form>
 									<div class="LEAcontainer">
-										<div class="LEA">
-											<form method="POST">
-												<p>LEA 1</p>
-												<p class="date">&lt;12 Januar 2018 - 26 Januar 2018&gt;</p>
-												<div class="buttons">
-													<input type="submit" name="overview" value="LEA-&Uuml;bersicht" class="button_m">
-													<input type="submit" name="edit" value="LEA bearbeiten" class="button_m">
+								
+												<div class="LEA">
+													<form action="POST">
+														<p>LEA 1</p>
+														<p class="date">&lt;12 Januar 2018 - 26 Januar 2018&gt;</p>
+														<div class="buttons">
+															<input type="submit" name="overview" value="LEA-&Uuml;bersicht" class="button_m">
+															<input type="submit" name="edit" value="LEA bearbeiten" class="button_m">
+														</div>
+													</form>
 												</div>
-											</form>
-										</div>
-										<div class="LEA">
-											<form action="POST">
-												<p>LEA 1</p>
-												<p class="date">&lt;12 Januar 2018 - 26 Januar 2018&gt;</p>
-												<div class="buttons">
-													<input type="submit" name="overview" value="LEA-&Uuml;bersicht" class="button_m">
-													<input type="submit" name="edit" value="LEA bearbeiten" class="button_m">
-												</div>
-											</form>
-										</div>
-										<div class="LEA">
-											<form action="POST">
-												<p>LEA 1</p>
-												<p class="date">&lt;12 Januar 2018 - 26 Januar 2018&gt;</p>
-												<div class="buttons">
-													<input type="submit" name="overview" value="LEA-&Uuml;bersicht" class="button_m">
-													<input type="submit" name="edit" value="LEA bearbeiten" class="button_m">
-												</div>
-											</form>
-										</div>
-										<div class="LEA">
-											<form action="POST">
-												<p>LEA 1</p>
-												<p class="date">&lt;12 Januar 2018 - 26 Januar 2018&gt;</p>
-												<div class="buttons">
-													<input type="submit" name="overview" value="LEA-&Uuml;bersicht" class="button_m">
-													<input type="submit" name="edit" value="LEA bearbeiten" class="button_m">
-												</div>
-											</form>
-										</div>
-										<div class="LEA">
-											<form action="POST">
-												<p>LEA 1</p>
-												<p class="date">&lt;12 Januar 2018 - 26 Januar 2018&gt;</p>
-												<div class="buttons">
-													<input type="submit" name="overview" value="LEA-&Uuml;bersicht" class="button_m">
-													<input type="submit" name="edit" value="LEA bearbeiten" class="button_m">
-												</div>
-											</form>
-										</div>
-										<div class="LEA">
-											<form action="POST">
-												<p>LEA 1</p>
-												<p class="date">&lt;12 Januar 2018 - 26 Januar 2018&gt;</p>
-												<div class="buttons">
-													<input type="submit" name="overview" value="LEA-&Uuml;bersicht" class="button_m">
-													<input type="submit" name="edit" value="LEA bearbeiten" class="button_m">
-												</div>
-											</form>
-										</div>
+												
 									</div>
 								</div>
 							</div>
@@ -94,12 +46,21 @@ class LEAmanager extends User{
 	}
 	
 	
-	public function showCreateLea(){
+public function showCreateLea(){
 		
 		include 'header.php';
 		
+		$titles = $this->DB->displayLEA();
+		
+		
+			foreach ($titles as $value) 
+			{
+				extract($value);
+				echo $title.'<br />';
+			}
+			
+		
 		echo'
-							
 								<a href="?do=leamanager"><input type="button" class="button_m floatR" value="Zur&uuml;ck"/></a>
 								<div id="addLeaDiv">			
 									<form id="addLeaForm" method="POST">
@@ -111,28 +72,24 @@ class LEAmanager extends User{
 											Ausgew&auml;hlte Klassen:
 										</div>
 										<div id="classes">
-											<form>
-												<select id="aClasses" class="LeaFormLeft" size="3">
-													<option>IBD2H16A</option>
-													<option>IBW2H16A</option>
-													<option>IBM2H16A</option>
-												</select>
-                                                <div id="classButtons" class="floatL">
-                                                    <input type="button" id="pickClass" class="button_20 floatL" value="Klasse auswählen"/>
-                                                    <input type="button" id="delClass" class="button_20 floatL" value="Klasse Löschen" style="display: none;"/>
-                                                </div>
-												<select id="rClasses" class="LeaFormRight" size="3">
-												
-												</select>
-											<form>
+											<select id="aClasses" class="LeaFormLeft" size="3">
+												<option>IBD2H16A</option>
+												<option>IBW2H16A</option>
+												<option>IBM2H16A</option>
+											</select>
+											<select id="rClasses" class="LeaFormRight" size="3">
+												<option></option>
+												<option></option>
+												<option></option>
+											</select>
 										</div>
 										
 										<div id="time">
 											<div class="div40 floatL">
-												Von:<br/><input type="date" id="from"/>
+												Von:<br/><input type="date" id="from" name="from"/>
 											</div>
 											<div class="div40 floatR">
-												Bis:<br/><input type="date" id="till"/>
+												Bis:<br/><input type="date" id="till" name="till"/>
 											</div>
 										</div>
 										
@@ -148,8 +105,8 @@ class LEAmanager extends User{
 												<input type="button" id="AddMilestone" class="button_100_100" value="Meilenstein hinzuf&uuml;gen"/>
 											</div>
 										</div>
-										<input type="hidden" name="do" value="saveLEA"/>
-										<input type="submit" class="button_m" value="Speichern"/>
+										<input type="hidden" name="do" value="insertLEAData"/>
+										<input type="submit" class="button_m" value="Speichern" id="saveLEA"/>
 									</form>
 									
 								</div>
@@ -315,11 +272,11 @@ class LEAmanager extends User{
 	}
 		
 	public function saveLEA(){
-		//LEA in der DB speichern
-		//$this->showHome();
-		var_dump ($this->DB->selectAll('user'));
-		echo 'hallo';
+	
+		$this->DB->writeLEA($_POST);
+		$this->showHome();
 	}
+	
 	public function error() {
 		echo 'SOMETHING WENT WRONG';
 	}

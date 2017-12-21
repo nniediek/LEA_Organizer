@@ -38,6 +38,62 @@ class Database
 		return $res;
     }
 
+	public function alert($msg) 
+	{
+		echo "<script type='text/javascript'>alert('$msg');</script>";
+	}
+	
+	public function writeLEA($postArray)
+	{
+		$ID = $this->generateID();
+		$title= "Lernaufgabe: ".$postArray['from']." bis ".$postArray['till'];
+		$startdate = $postArray['from'];
+		$enddate = $postArray['till'];
+		
+		//check wether a date is picked and if the enddate is beyond the startdate
+		if(empty($startdate)==true OR empty($enddate)==true OR $enddate < $startdate)
+		{
+			echo 'Please pick a valid date!';
+		}
+		//else write into db
+		else
+		{
+			$sql = "INSERT INTO LEA (ID, title, startdate,enddate)
+			VALUES ('$ID', '$title', '$startdate','$enddate')";
+			
+			try{
+				$this->dbc->exec($sql);
+				echo 'new record successful created';
+			}
+			
+			catch(Exception $e)
+			{
+				$e->getMessage();
+				echo 'crashed';
+			}
+		}
+	}
+	
+	public function displayLEA()
+	{
+			try
+			{
+				$sql = $this->dbc->prepare("SELECT title FROM LEA ORDER BY title ASC");
+				$sql->execute();
+				$result = $sql->fetchAll(PDO::FETCH_ASSOC);
+				return $result;
+			}
+			catch(Exception $e)
+			{
+				$e->getMessage();
+			}
+	}
+	
+	public function getLEAtitles()
+	{
+		
+	}
+	
     // generate a random id for the db entries
     public function generateID(){
         $data = openssl_random_pseudo_bytes(16);
