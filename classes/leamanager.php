@@ -11,7 +11,7 @@ class LEAmanager extends User{
 	
 public function showHome(){
 		
-		$res = $this->db->getLEAs();
+		$res = $this->DB->getLEAs();
 		$leaCount = 0;
 		include 'header.php';		
 		
@@ -58,7 +58,7 @@ public function showHome(){
 	
 public function showCreateLea(){
     
-        $res = $this->db->getClasses();
+        $res = $this->DB->getClasses();
 		
 		include 'header.php';
 		
@@ -79,7 +79,7 @@ public function showCreateLea(){
                                                     foreach($res as $row) 
                                                     {
                                                        echo'
-                                                            <option id="'.$row->ID.'" :selected>'.$row->name.'</option>
+                                                            <option :selected>'.$row->name.'</option>
                                                        '; 
                                                     }
                                                         
@@ -88,7 +88,7 @@ public function showCreateLea(){
                                                     <input type="button" id="pickClass" class="button_100 floatL" value="Klasse auswählen"/>
                                                     <input type="button" id="delClass" class="button_100 floatL" value="Klasse Löschen" style="display: none;"/>
                                                 </div>
-												<select id="rClasses" class="LeaFormRight" size="3" multiple="multiple">
+												<select name="selectedClasses[ ]" id="rClasses" class="LeaFormRight" size="3" multiple="multiple">
 												
 												</select>
 										</div>
@@ -124,6 +124,11 @@ public function showCreateLea(){
 						</body>
 						
 					</html>';
+	}
+    
+    public function saveLEA(){   
+		$this->DB->writeLEA($_POST);
+		$this->showHome();
 	}
 	
 	public function showLeaStatus (){
@@ -283,10 +288,7 @@ public function showCreateLea(){
 	
 	
 		
-	public function saveLEA(){
-		$this->db->writeLEA($_POST);
-		$this->showHome();
-	}
+
 	
 	public function error() {
 		echo 'SOMETHING WENT WRONG';

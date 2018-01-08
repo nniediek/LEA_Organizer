@@ -94,18 +94,35 @@ class Database
 		else
 		{
 			$sql = "INSERT INTO LEA (ID, title, startdate,enddate)
-			VALUES ('$ID', '$title', '$startdate','$enddate')";
+			VALUES ('$ID', '$title', '$startdate','$enddate');";
 			
 			try{
 				$this->dbc->exec($sql);
-				echo 'new record successful created';
-			}
+				echo 'lea successful created';
+			}  
 			
 			catch(Exception $e)
 			{
 				$e->getMessage();
 				echo 'crashed';
 			}
+            
+            //write values in LEA_HAS_CLASS
+            foreach($postArray['selectedClasses'] as $class){
+                $sql = "INSERT INTO LEA_HAS_CLASS (LEAID, CLASSID) VALUES ('".$ID."', (SELECT ID FROM CLASS WHERE name = '".$class."'));";
+                
+            try{
+				$this->dbc->exec($sql);
+			}  
+			
+			catch(Exception $e)
+			{
+				$e->getMessage();
+				echo 'crashed';
+			}
+            }
+            
+            
 		}
 	}
 	

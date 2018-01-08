@@ -18,7 +18,7 @@
 
 	$leamanager = new LEAManager('testuser', 'hans', 'meier', 'hans.hans@hans.hans');
 	$instructor;
-	$student;
+	$student = new Student("ibd2h16abo", "Julius" , "Böcker", "j.boecker@web.de" , "ibd2h16abo");
 	$project;
 	
 ?>
