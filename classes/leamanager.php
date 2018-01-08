@@ -11,7 +11,7 @@ class LEAmanager extends User{
 	
 public function showHome(){
 		
-		$res = $this->DB->getLEAs();
+		$res = $this->db->getLEAs();
 		$leaCount = 0;
 		include 'header.php';		
 		
@@ -58,7 +58,7 @@ public function showHome(){
 	
 public function showCreateLea(){
     
-        $res = $this->DB->getClasses();
+        $res = $this->db->getClasses();
 		
 		include 'header.php';
 		
@@ -127,7 +127,7 @@ public function showCreateLea(){
 	}
     
     public function saveLEA(){   
-		$this->DB->writeLEA($_POST);
+		$this->db->writeLEA($_POST);
 		$this->showHome();
 	}
 	
