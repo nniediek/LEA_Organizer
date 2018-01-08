@@ -7,7 +7,7 @@
 		private $firstName; // string with first name of user
 		private $lastName; // string with lst name of user
 		private $eMail; // string with the email of the user
-		protected $DB;
+		protected $db;
 		
 		// set user variables to the given parameters
 		public function __construct($username, $firstName, $lastName, $eMail){
@@ -15,7 +15,7 @@
 			$this->firstName = $firstName;
 			$this->lastName = $lastName;
 			$this->eMail = $eMail;
-			$this->DB = new Database();
+			$this->db = new Database();
 		}
 		
 		// returns the username
