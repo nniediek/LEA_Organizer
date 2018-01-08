@@ -167,6 +167,10 @@ label {
 	float: left;
 }
 
+#classButtons{
+    width: 20%;
+}
+
 .LeaFormRight {
 	width: 40%;
 	height: 100%;
