@@ -15,7 +15,12 @@ class Student
     }
 	
 	public function showHome(){
-		$this->showCreateTeam();
+		$checkForProject = $this->db->getProject($_SESSION["userID"]);
+		
+		if($checkForProject == null)
+			$this->showCreateTeam();
+		else
+			$this->showStudent();
 	}
 	
 	//first view, if the student is not in a project yet
