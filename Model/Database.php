@@ -204,6 +204,8 @@ class Database {
 					AND LEA_HAS_CLASS.LEAID = LEA.ID
 					AND LEA_HAS_CLASS.CLASSID = CLASS.ID
 					AND LEA.ID IN(SELECT LEA.ID
+					AND LEA.startdate <= CURRENT_DATE
+					AND LEA.enddate >= CURRENT_DATE
 						FROM STUDENT, CLASS, LEA, LEA_HAS_CLASS
 						WHERE STUDENT.CLASSID = CLASS.ID
 							AND LEA_HAS_CLASS.LEAID = LEA.ID
@@ -286,7 +288,6 @@ class Database {
         $stmt->setFetchMode(\PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
 		
-		var_dump($res);
 		return $res[0]["ID"];
 	}
 	
@@ -330,6 +331,33 @@ class Database {
 		
 	}
 	
+	//Checks, if the given student (username) is already in a current project
+	public function isInProject($studentName){
+		$db = new \PDO('mysql:host=' . $this->linkName . ';dbname=' . $this->dbName, $this->user, $this->pw);
+				
+		$sql = "SELECT STUDENTID
+				FROM STUDENT_HAS_PROJECT, PROJECT, LEA
+				WHERE STUDENT_HAS_PROJECT.PROJECTID = PROJECT.ID
+					AND PROJECT.LEAID = LEA.ID
+					AND LEA.startdate <= CURRENT_DATE
+					AND LEA.enddate >= CURRENT_DATE
+					AND STUDENTID = '" . $this->getIDFromUsername($studentName) . "'";
+		
+		try {
+			$stmt = $this->dbc->query($sql);
+        } catch (PDOException $e) {
+            print "Error!: " . $e->getMessage() . "<br/>";
+        }
+		
+        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+        $res = $stmt->fetchAll();
+		
+		$db=null;
+		
+		if(count($res) == 0) return false;
+		else return true;
+	}
+	
 	public function getUserGroup($username){
 
 		// select instructor with $username
@@ -348,15 +376,15 @@ class Database {
 		if($res){
 			if($res[0]['isManager'] == 1){
 				echo 'Leamanager';
-				return 1;
+				return 0;
 			}else{
 				echo 'dozent';
-				return 2;
+				return 1;
 			}
 		} else{
 			// try to select student with $username
 			$sql = "SELECT * FROM STUDENT i,USER u WHERE  i.USERID = u.ID AND u.username = '" . $username ."'";
-			echo $sql;
+
 			try {
 				$stmt = $this->dbc->query($sql);
 			} catch (PDOException $e) {
@@ -368,7 +396,7 @@ class Database {
 
 			if($res){
 				echo 'Student';
-				return 3;
+				return 2;
 			}else{
 				// user not found in instructors or student
 				echo 'does not exist';

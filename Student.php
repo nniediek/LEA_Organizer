@@ -15,17 +15,11 @@ class Student
     }
 	
 	public function showHome(){
-		$checkForProject = $this->db->getProject($_SESSION["userID"]);
-		
-		if($checkForProject == null)
-			$this->showCreateTeam();
-		else
-			$this->showStudent();
+		$this->showCreateTeam();
 	}
 	
 	//first view, if the student is not in a project yet
 	public function showCreateTeam(){
-		
 		echo '<!DOCTYPE html>
 
 			<html>
@@ -39,32 +33,55 @@ class Student
 					
 				</head>	
 				<body>
-					<div id="wrapper">';
-					
+					<div id="wrapper">
+				';
+				
 		include 'header.php';
-						
 						
 		//creates a team after pressing the submit button			
 		if (isset($_POST["submitTeamForm"]) || $_SERVER["REQUEST_METHOD"] == "POST") {
-			$teamMembers = $_POST["rStudents"];
-			array_push($teamMembers, $_SESSION["username"]);
-			if(count($teamMembers) >= 2 && count($teamMembers <= 3)){
-				//array_push($teamMembers, "ibw2h16ace");
-				$db = new Database();
-				$db->createProject($teamMembers);
-				header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showStudent');	
+			if(isset($_POST["rStudents"]) && $_POST["rStudents"][0] != null){
+				$teamMembers = $_POST["rStudents"];
+				array_push($teamMembers, $_SESSION["username"]);
+				
+				$error = false;
+				if(count($teamMembers) >= 2 && count($teamMembers <= 3)){
+					//array_push($teamMembers, "ibw2h16ace");
+					$db = new Database();
+					
+					for($i = 0; $i < count($teamMembers); $i++){
+						if($this->db->isInProject($teamMembers[$i])){
+							$error = true;
+							break;
+						}
+					}
+					
+					if($error == false){					
+						$db->createProject($teamMembers);
+						header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showStudent');	
+						die;
+					}
+				}
+				else{
+					$error = true;
+				}
+			}
+			else $error = true;
+			
+			if($error){
+				header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showCreateTeam&error=true');
 				die;
 			}
-			else{
-				echo 'Fehler beim erstellen des Teams. Ein Team darf nur 2-3 Mitglieder haben';
-			}		
+			
 		}
 		else {
 			
-			//returns all members that are not in a team and in the same LEA
+			//returns all members that are not in a team and in the same LEA:
 			$possibleMembers = $this->db->getPossibleTeamMembers($_SESSION["userID"]);
 			echo '		<div id="addTeam">	
-						<h1>Team hinzufügen</h1>
+						<h1>Team hinzufügen</h1>';
+			if(isset($_GET["error"]) && $_GET["error"] == true) echo '<h4 style="color:red">Fehler beim Erstellen des Teams</h4>';	
+			echo		'
 						<div id="available">
 							Verf&uuml;gbare Studenten:					
 						</div>
@@ -83,14 +100,23 @@ class Student
 									. $possibleMembers[$i]["lastname"];
 								echo "</option>";
 							}
-						}
-						else echo "<option>Keine verfügbaren Teammitglieder</option>";
-						
-						echo '</datalist>
+							echo '</datalist>
 							<div id="move">
 								<input type="button" id="addStudent" class="button_s" value=">">
 								<input type="button" id="delStudent" class="button_s" value="<">
-							</div>
+							</div>';
+						}
+						else{
+							echo '<option>Keine verfügbaren Teammitglieder.</option>
+							<option>Bitte wenden Sie sich an einen Dozenten.</option>
+							</datalist>
+							<div id="move">
+								<input type="button" id="addStudent" class="button_s" value=">" disabled>
+								<input type="button" id="delStudent" class="button_s" value="<" disabled>
+							</div>';
+						}
+						
+						echo '
 						
 							<form id="submitTeamForm" method="post" onsubmit="selectAll()">
 								<select id="rStudents" name="rStudents[]" class="div40a" multiple size="3">
@@ -114,7 +140,7 @@ class Student
 		
 		//$students = $this->db->getProjectMembers($_SESSION["userID"]);
 		$leaid = $this->db->getLeaID($_SESSION["userID"])->LEAID;
-		$project = $this->db->getProject($_SESSION["userID"]);
+		$project = $this->db->getProject($leaid, $_SESSION["userID"]);
 		$students = $this->db->getProjectMembers($_SESSION["userID"],$project->ID);
 		$milestones = $this->db->getMilestones($leaid);
 		$logbook = $this->db->getLogbook($project->ID);
