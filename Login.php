@@ -50,6 +50,7 @@ class Login
 		$dn = "DC=pb,DC=bib,DC=de";
 		$ldap_port = 389;
 		
+		echo "Test";
 		
 		if ($connect = ldap_connect($ldap_address, $ldap_port)) 
 		{
@@ -70,17 +71,24 @@ class Login
 					$_SESSION["permission"] = $this->db->getUserGroup($username);
 					$_SESSION["userID"] = $user->ID;
 					$_SESSION["username"] = $user->username;
+					echo $_SESSION["username"];
 					ldap_close($connect);
 					
-					$checkForProject = $this->db->getProject($_SESSION["userID"]);
-					if( $checkForProject == null){
-						header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showCreateTeam');	
-						die;
+					$controller = "";
+					
+					switch($_SESSION["permission"])
+					{
+						case 0: $controller = "LeaManager";
+							break;
+						case 1: $controller = "Instructor";
+							break;
+						case 2:	$controller = "Student";
+							break;				
 					}
-					else{
-						header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showStudent');	
-						die;
-					}
+					
+					header('Location: '. $_SERVER['PHP_SELF'] . '?controller='.$controller.'&do=showHome');	
+								die;
+							break;
 				}
 			}
 			else{

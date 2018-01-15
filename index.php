@@ -1,7 +1,6 @@
 <?php 
 session_start();
 
- var_dump($_SESSION);
 spl_autoload_register(function ($className) {
     if (substr($className, 0, 4) !== 'LEO\\') {
             // not our business
@@ -33,15 +32,18 @@ spl_autoload_register(function ($className) {
 $controllerName = "";
 $doMethodName = "";
 
-	if ($_SERVER["REQUEST_METHOD"] == "POST") {
-		$controllerName = isset($_POST['controller']) && $_POST['controller'] ? $_POST['controller'] : "Login";
-		$doMethodName = isset($_POST['do']) && $_POST['do'] ? $_POST['do'] : "showLogin";
-	} else {
-		$controllerName = isset($_GET['controller']) && $_GET['controller'] ? $_GET['controller'] : "Login";
-		$doMethodName = isset($_GET['do']) && $_GET['do'] ? $_GET['do'] : "showLogin";
-	}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+	$controllerName = isset($_POST['controller']) && $_POST['controller'] ? $_POST['controller'] : (isset($_SESSION["permission"])  ? getController($_SESSION["permission"]) : "Login");
+	$doMethodName = isset($_POST['do']) && $_POST['do'] ? $_POST['do'] : (isset($_SESSION["permission"]) ? "showHome" : "showLogin");
+} else {
+	$controllerName = isset($_GET['controller']) && $_GET['controller'] ? $_GET['controller'] : (isset($_SESSION["permission"]) ? getController($_SESSION["permission"]) : "Login");
+	$doMethodName = isset($_GET['do']) && $_GET['do'] ? $_GET['do'] : (isset($_SESSION["permission"]) ? "showHome" : "showLogin");
+}
 
 $controllerClassName = 'LEO\\'.ucfirst($controllerName);
+
+echo $controllerName;
+echo $doMethodName;
 
 try {
     $controller = new $controllerClassName();
@@ -51,19 +53,20 @@ try {
 }
 
 
-function checkPermission($permission){
-	$controller = "Login";
+function getController($permission){
+	$controller = "";
+	echo $permission;
+	
 	switch($permission){
 		
-		case 0: $controller = "LeaManager";
+		case 1: $controller = "LeaManager";
 		break;
-		case 1: $controller = "Instructor";
+		case 2: $controller = "Instructor";
 		break;
-		case 2: $controller = "Student";
+		case 3: $controller = "Student";
 		break;
 		default: $controller = "Login";
 	}
-	echo $controller;
 	return $controller;
 }
 

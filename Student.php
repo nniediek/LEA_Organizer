@@ -15,7 +15,12 @@ class Student
     }
 	
 	public function showHome(){
-		$this->showCreateTeam();
+		$checkForProject = $this->db->getProject($_SESSION["userID"]);
+		
+		if($checkForProject == null)
+			$this->showCreateTeam();
+		else
+			$this->showStudent();
 	}
 	
 	//first view, if the student is not in a project yet
@@ -34,20 +39,10 @@ class Student
 					
 				</head>	
 				<body>
-					<div id="wrapper">
-						<header>
-							<div class="usercont">
-								<p>Eingeloggt als:</p>
-								<div class="username">
-									&lt;Username&gt;
-								</div>
-							</div>
-							<div class="logocont">
-								<img src="img/logo.png" class="logo_small">
-								<input type="button" id="logout" class="button_m" value="Logout">
-							</div>
-							<div style="clear: both"></div>
-						</header>';
+					<div id="wrapper">';
+					
+		include 'header.php';
+						
 						
 		//creates a team after pressing the submit button			
 		if (isset($_POST["submitTeamForm"]) || $_SERVER["REQUEST_METHOD"] == "POST") {
