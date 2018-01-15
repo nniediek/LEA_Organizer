@@ -376,10 +376,10 @@ class Database {
 		if($res){
 			if($res[0]['isManager'] == 1){
 				echo 'Leamanager';
-				return 0;
+				return 1;
 			}else{
 				echo 'dozent';
-				return 1;
+				return 2;
 			}
 		} else{
 			// try to select student with $username
@@ -396,7 +396,7 @@ class Database {
 
 			if($res){
 				echo 'Student';
-				return 2;
+				return 3;
 			}else{
 				// user not found in instructors or student
 				echo 'does not exist';
