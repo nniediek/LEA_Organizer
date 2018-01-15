@@ -114,7 +114,7 @@ class Student
 		
 		//$students = $this->db->getProjectMembers($_SESSION["userID"]);
 		$leaid = $this->db->getLeaID($_SESSION["userID"])->LEAID;
-		$project = $this->db->getProject($leaid, $_SESSION["userID"]);
+		$project = $this->db->getProject($_SESSION["userID"]);
 		$students = $this->db->getProjectMembers($_SESSION["userID"],$project->ID);
 		$milestones = $this->db->getMilestones($leaid);
 		$logbook = $this->db->getLogbook($project->ID);
