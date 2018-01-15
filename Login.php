@@ -78,11 +78,11 @@ class Login
 					
 					switch($_SESSION["permission"])
 					{
-						case 0: $controller = "LeaManager";
+						case 1: $controller = "LeaManager";
 							break;
-						case 1: $controller = "Instructor";
+						case 2: $controller = "Instructor";
 							break;
-						case 2:	$controller = "Student";
+						case 3:	$controller = "Student";
 							break;				
 					}
 					
