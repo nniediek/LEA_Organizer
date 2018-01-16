@@ -58,11 +58,9 @@ class Login
 			ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, 3);
 			ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
 
-				// Authentifizierung des Benutzers
-			if (@$bind = ldap_bind($connect, $domain . "\\" . $username, $pw)) {
-				
-
-					
+				// Authentifizierung des Benutzers -- pw und username dürfen nicht null sein, da ldap_bind sonst nicht richtig läuft
+			if (@$bind = ldap_bind($connect, $domain . "\\" . $username, $pw) && $pw != null && $username != null ) {
+							
 				$user = $this->db->selectUserByUsername($username);
 				if($user ==null){
 					echo 'loginversuch fehlgeschlagen';
