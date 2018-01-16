@@ -90,7 +90,8 @@ class Login
 				}
 			}
 			else{
-				showLogin();
+				header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Login&do=showLogin');	
+								die;
 				ldap_close($connect);
 			}
 			
