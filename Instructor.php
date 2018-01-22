@@ -6,9 +6,9 @@ use LEO\Model\Database;
 
 class Instructor
 {
-	private $db;
-	
-	public function __construct() 
+    private $db;
+
+    public function __construct()
     {
         $this->db = new Database();
     }

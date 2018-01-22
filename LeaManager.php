@@ -6,20 +6,20 @@ use LEO\Model\Database;
 
 class LeaManager
 {
-	private $db;
-	
-	public function __construct() 
+    private $db;
+
+    public function __construct()
     {
         $this->db = new Database();
     }
-	
-	public function showHome(){
-		
-		
-		
-		include 'header.php';
-		
-		echo '
+
+    public function showHome()
+    {
+
+
+        include 'header.php';
+
+        echo '
 		
 		<div id="overview_panel">
 									<p> Übersicht über die LEAs </p>
@@ -34,22 +34,20 @@ class LeaManager
 								</form>
 								<div class="LEAcontainer">
 								';
-								
-		$titles =  $this->db->getLEAs();
-		
-		foreach ($titles as $key => $val)
-		{
-			foreach ($val as $key2 => $val2)
-			{
-			echo '
+
+        $titles = $this->db->getLEAs();
+
+        foreach ($titles as $key => $val) {
+            foreach ($val as $key2 => $val2) {
+                echo '
 			<div class="LEA">
-											<p class="date"> '.$val2.'</p>
+											<p class="date"> ' . $val2 . '</p>
 											<form method="GET">
 												
 												
 												<div class="buttons">
 													<input type="submit" name="overview" value="LEA-&Uuml;bersicht" class="button_m"/>
-													<input type="hidden" name="title" value="'.$val2.'""/>
+													<input type="hidden" name="title" value="' . $val2 . '""/>
 													<input type="hidden" name="do" value="editLEA"/>
 													<input type="hidden" name="controller" value="LeaManager"/>
 													<input type="submit" name="submit" value="Bearbeiten" class="button_m "/>
@@ -59,11 +57,11 @@ class LeaManager
 										</div>
 			
 					';
-			
-			}
-		}						
-								
-				echo '						
+
+            }
+        }
+
+        echo '						
 									</div>
 								</div>
 							</div>
@@ -75,17 +73,18 @@ class LeaManager
 						
 					</html>
 		';
-		
-				
-	}
-	
-	public function showCreateLea(){
-    
+
+
+    }
+
+    public function showCreateLea()
+    {
+
         $res = $this->db->getClasses();
-		
-		include 'header.php';
-		
-		echo'
+
+        include 'header.php';
+
+        echo '
 							
 								<a href="?do=leamanager"><input type="button" class="button_m floatR" value="Zur&uuml;ck"/></a>
 								<div id="addLeaDiv">			
@@ -99,14 +98,13 @@ class LeaManager
 										</div>
 										<div id="classes">
 												<select id="aClasses" class="LeaFormLeft" size="3" multiple="multiple">';
-                                                    foreach($res as $row) 
-                                                    {
-                                                       echo'
-                                                            <option :selected>'.$row->name.'</option>
-                                                       '; 
-                                                    }
-                                                        
-        echo'                                  </select>
+        foreach ($res as $row) {
+            echo '
+                                                            <option :selected>' . $row->name . '</option>
+                                                       ';
+        }
+
+        echo '                                  </select>
                                                 <div id="classButtons" class="floatL">
                                                     <input type="button" id="pickClass" class="button_100 floatL" value="Klasse auswählen"/>
                                                     <input type="button" id="delClass" class="button_100 floatL" value="Klasse Löschen" style="display: none;"/>
@@ -137,48 +135,45 @@ class LeaManager
 						</body>
 						
 					</html>';
-	}
-	
-	public function editLEA()
-	{
-		$title = $_GET['title'];
-		//echo "the title is " .$title; nothing in $_POST['title']
-		$resTitles = $this->db->selectLEAByTitle($title);
-		$resClasses = $this->db->getClasses();
-		
-		$today = date('Y-m-d');
-		
-		//getting the MileStone titles from the Database
-		$milestoneDescriptions = $this->db->getMilestoneDescription($title);
-		
-		//getting the LEAID
-		$leaID = $this->db->getLEAIDByTitle($title);
-		
-		
-		include 'header.php';
-		
-		
-		
-		//<script type="text/javascript" src="\js\jquery-3.1.1.min.js"></script>
-		//<script type="text/javascript" src="\js\jquery-ui-1.10.3.custom\development-bundle\ui\jquery.ui.datepicker.js"></script>
-		
-		
-		
-		//alert("test");
-		
-			
-		
-		/*
-		var temp = document.getElementById("milestoneSub");
-		temp.onclick=function(){
-			
-			document.getElementById("description").style.background = "RED";
-			document.getElementById("description").placeholer="BLA";
-			return false;
-		
-		};
-		*/
-		echo'
+    }
+
+    public function editLEA()
+    {
+        $title = $_GET['title'];
+        //echo "the title is " .$title; nothing in $_POST['title']
+        $resTitles = $this->db->selectLEAByTitle($title);
+        $resClasses = $this->db->getClasses();
+
+        $today = date('Y-m-d');
+
+        //getting the MileStone titles from the Database
+        $milestoneDescriptions = $this->db->getMilestoneDescription($title);
+
+        //getting the LEAID
+        $leaID = $this->db->getLEAIDByTitle($title);
+
+
+        include 'header.php';
+
+
+        //<script type="text/javascript" src="\js\jquery-3.1.1.min.js"></script>
+        //<script type="text/javascript" src="\js\jquery-ui-1.10.3.custom\development-bundle\ui\jquery.ui.datepicker.js"></script>
+
+
+        //alert("test");
+
+
+        /*
+        var temp = document.getElementById("milestoneSub");
+        temp.onclick=function(){
+
+            document.getElementById("description").style.background = "RED";
+            document.getElementById("description").placeholer="BLA";
+            return false;
+
+        };
+        */
+        echo '
 		<script type="text/javascript">
 		$(document).ready(function() {
 		
@@ -252,12 +247,12 @@ class LeaManager
 						<form Method="POST">
 							<span class="close2">close</span>
 							<!--leaID-->
-							<input type="hidden" name="LEAID" value="'.$leaID[0]['ID'].'"/>
+							<input type="hidden" name="LEAID" value="' . $leaID[0]['ID'] . '"/>
 							<!--<label for="title">Titel:</label>
 							<input id="milestoneTitle" name="title">-->
 							
 							<label id="deadlineId" for="deadline">Abgabetermin:</label>
-							<input type="date" id="deadline" name="deadline" min="'.$today.'">
+							<input type="date" id="deadline" name="deadline" min="' . $today . '">
 							
 							<label for="description">Beschreibung:</label>
 							<textarea id="description" name="description" placeholder=""></textarea>
@@ -274,7 +269,7 @@ class LeaManager
 								<a href="?do=showHome&controller=LeaManager"><input type="button" class="button_m floatR" value="Zur&uuml;ck"/></a>
 								
 								<div id="addLeaDiv">			
-								<div><h2 id="title">'.$resTitles[0]['title'].'</h2></div>
+								<div><h2 id="title">' . $resTitles[0]['title'] . '</h2></div>
 									<form id="addLeaForm" method="POST">
 										
 										<div id="available">
@@ -285,14 +280,13 @@ class LeaManager
 										</div>
 										<div id="classes">
 											<select id="aClasses" class="LeaFormLeft" size="3">';
-											
-											 foreach($resClasses as $row) 
-                                                    {
-                                                       echo'
-                                                            <option :selected>'.$row->name.'</option>
-                                                       '; 
-                                                    }
-		echo '								</select>	
+
+        foreach ($resClasses as $row) {
+            echo '
+                                                            <option :selected>' . $row->name . '</option>
+                                                       ';
+        }
+        echo '								</select>	
 											<div id="classButtons" class="floatL">
                                                     <input type="button" id="pickClass" class="button_100 floatL" value="Klasse auswählen"/>
                                                     <input type="button" id="delClass" class="button_100 floatL" value="Klasse Löschen" style="display: none;"/>
@@ -317,16 +311,14 @@ class LeaManager
 										<div id="milestones">
 											<div id="ms_left">
 												<select id="ms_list" class="LeaFormLeft" size="3">';
-										foreach ($milestoneDescriptions as $key => $val)
-										{
-											foreach ($val as $key2 => $val2)
-											{
-												echo "<option>".$val2."</option>";
-												
-			
-											}
-										}					
-												echo'													
+        foreach ($milestoneDescriptions as $key => $val) {
+            foreach ($val as $key2 => $val2) {
+                echo "<option>" . $val2 . "</option>";
+
+
+            }
+        }
+        echo '													
 												</select>
 											</div>
 											<div id="ms_right">
@@ -345,21 +337,24 @@ class LeaManager
 						</body>
 						
 					</html>';
-		
-		
-	}
-	
-	 public function saveLEA(){   
-		$this->db->writeLEA($_POST);
-		$this->showHome();
-	}
-	
-	public function addMilestone(){
-		$this->db->addMilestone($_POST);
-		$this->editLEA();
-	}
-	
-	public function validateForm(){
+
+
+    }
+
+    public function saveLEA()
+    {
+        $this->db->writeLEA($_POST);
+        $this->showHome();
+    }
+
+    public function addMilestone()
+    {
+        $this->db->addMilestone($_POST);
+        $this->editLEA();
+    }
+
+    public function validateForm()
+    {
         foreach ($this->labels as $index => $value) {
             if (!isset($_POST[$index]) || empty($_POST[$index])) {
                 $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
@@ -373,9 +368,8 @@ class LeaManager
         }
         count($this->errors) > 0 ? $this->showArticleForm() : $this->writeArticleContent($this->validData);
     }
-	
-	
-    
+
+
 }
 
 ?>

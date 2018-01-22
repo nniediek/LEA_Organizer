@@ -6,26 +6,28 @@ use LEO\Model\Database;
 
 class Student
 {
-	//database connection
-	private $db;
-	
-	public function __construct() 
+    //database connection
+    private $db;
+
+    public function __construct()
     {
         $this->db = new Database();
     }
-	
-	public function showHome(){
-		$checkForProject = $this->db->getProject($_SESSION["userID"]);
-		
-		if($checkForProject == null)
-			$this->showCreateTeam();
-		else
-			$this->showStudent();
-	}
-	
-	//first view, if the student is not in a project yet
-	public function showCreateTeam(){
-		echo '<!DOCTYPE html>
+
+    public function showHome()
+    {
+        $checkForProject = $this->db->getProject($_SESSION["userID"]);
+
+        if ($checkForProject == null)
+            $this->showCreateTeam();
+        else
+            $this->showStudent();
+    }
+
+    //first view, if the student is not in a project yet
+    public function showCreateTeam()
+    {
+        echo '<!DOCTYPE html>
 
 			<html>
 
@@ -40,53 +42,50 @@ class Student
 				<body>
 					<div id="wrapper">
 				';
-				
-		include 'header.php';
-						
-		//creates a team after pressing the submit button			
-		if (isset($_POST["submitTeamForm"]) || $_SERVER["REQUEST_METHOD"] == "POST") {
-			if(isset($_POST["rStudents"]) && $_POST["rStudents"][0] != null){
-				$teamMembers = $_POST["rStudents"];
-				array_push($teamMembers, $_SESSION["username"]);
-				
-				$error = false;
-				if(count($teamMembers) >= 2 && count($teamMembers <= 3)){
-					//array_push($teamMembers, "ibw2h16ace");
-					$db = new Database();
-					
-					for($i = 0; $i < count($teamMembers); $i++){
-						if($this->db->isInProject($teamMembers[$i])){
-							$error = true;
-							break;
-						}
-					}
-					
-					if($error == false){					
-						$db->createProject($teamMembers);
-						header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showStudent');	
-						die;
-					}
-				}
-				else{
-					$error = true;
-				}
-			}
-			else $error = true;
-			
-			if($error){
-				header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showCreateTeam&error=true');
-				die;
-			}
-			
-		}
-		else {
-			
-			//returns all members that are not in a team and in the same LEA:
-			$possibleMembers = $this->db->getPossibleTeamMembers($_SESSION["userID"]);
-			echo '		<div id="addTeam">	
+
+        include 'header.php';
+
+        //creates a team after pressing the submit button
+        if (isset($_POST["submitTeamForm"]) || $_SERVER["REQUEST_METHOD"] == "POST") {
+            if (isset($_POST["rStudents"]) && $_POST["rStudents"][0] != null) {
+                $teamMembers = $_POST["rStudents"];
+                array_push($teamMembers, $_SESSION["username"]);
+
+                $error = false;
+                if (count($teamMembers) >= 2 && count($teamMembers <= 3)) {
+                    //array_push($teamMembers, "ibw2h16ace");
+                    $db = new Database();
+
+                    for ($i = 0; $i < count($teamMembers); $i++) {
+                        if ($this->db->isInProject($teamMembers[$i])) {
+                            $error = true;
+                            break;
+                        }
+                    }
+
+                    if ($error == false) {
+                        $db->createProject($teamMembers);
+                        header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=Student&do=showStudent');
+                        die;
+                    }
+                } else {
+                    $error = true;
+                }
+            } else $error = true;
+
+            if ($error) {
+                header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=Student&do=showCreateTeam&error=true');
+                die;
+            }
+
+        } else {
+
+            //returns all members that are not in a team and in the same LEA:
+            $possibleMembers = $this->db->getPossibleTeamMembers($_SESSION["userID"]);
+            echo '		<div id="addTeam">	
 						<h1>Team hinzufügen</h1>';
-			if(isset($_GET["error"]) && $_GET["error"] == true) echo '<h4 style="color:red">Fehler beim Erstellen des Teams</h4>';	
-			echo		'
+            if (isset($_GET["error"]) && $_GET["error"] == true) echo '<h4 style="color:red">Fehler beim Erstellen des Teams</h4>';
+            echo '
 						<div id="available">
 							Verf&uuml;gbare Studenten:					
 						</div>
@@ -95,33 +94,32 @@ class Student
 						</div>
 						<input type="search" name="students" list="students" placeholder="Studenten ausw&auml;hlen" id="aStudents" class="div40a" size="3">
 						<datalist id="students">';
-					
-						//inserts all possible team members into the datalist
-						if ($possibleMembers != NULL){
-							for ($i=0; $i<count($possibleMembers); $i++){
-								echo "<option value=" .$possibleMembers[$i]["username"];
-								echo ">";
-								echo $possibleMembers[$i]["firstname"] . " "
-									. $possibleMembers[$i]["lastname"];
-								echo "</option>";
-							}
-							echo '</datalist>
+
+            //inserts all possible team members into the datalist
+            if ($possibleMembers != NULL) {
+                for ($i = 0; $i < count($possibleMembers); $i++) {
+                    echo "<option value=" . $possibleMembers[$i]["username"];
+                    echo ">";
+                    echo $possibleMembers[$i]["firstname"] . " "
+                        . $possibleMembers[$i]["lastname"];
+                    echo "</option>";
+                }
+                echo '</datalist>
 							<div id="move">
 								<input type="button" id="addStudent" class="button_s" value=">">
 								<input type="button" id="delStudent" class="button_s" value="<">
 							</div>';
-						}
-						else{
-							echo '<option>Keine verfügbaren Teammitglieder.</option>
+            } else {
+                echo '<option>Keine verfügbaren Teammitglieder.</option>
 							<option>Bitte wenden Sie sich an einen Dozenten.</option>
 							</datalist>
 							<div id="move">
 								<input type="button" id="addStudent" class="button_s" value=">" disabled>
 								<input type="button" id="delStudent" class="button_s" value="<" disabled>
 							</div>';
-						}
-						
-						echo '
+            }
+
+            echo '
 						
 							<form id="submitTeamForm" method="post" onsubmit="selectAll()">
 								<select id="rStudents" name="rStudents[]" class="div40a" multiple size="3">
@@ -136,61 +134,59 @@ class Student
 				</body>
 			
 			</html>';
-		}
-	}
-	
-	public function showStudent()
-	{
-		include 'header.php';
-		
-		//$students = $this->db->getProjectMembers($_SESSION["userID"]);
-		$leaid = $this->db->getLeaID($_SESSION["userID"])->LEAID;
-		$project = $this->db->getProject($_SESSION["userID"]);
-		$students = $this->db->getProjectMembers($_SESSION["userID"],$project->ID);
-		$milestones = $this->db->getMilestones($leaid);
-		$logbook = $this->db->getLogbook($project->ID);
-		
-		echo '<div id="team_overview">
+        }
+    }
+
+    public function showStudent()
+    {
+        include 'header.php';
+
+        //$students = $this->db->getProjectMembers($_SESSION["userID"]);
+        $leaid = $this->db->getLeaID($_SESSION["userID"])->LEAID;
+        $project = $this->db->getProject($_SESSION["userID"]);
+        $students = $this->db->getProjectMembers($_SESSION["userID"], $project->ID);
+        $milestones = $this->db->getMilestones($leaid);
+        $logbook = $this->db->getLogbook($project->ID);
+
+        echo '<div id="team_overview">
 				<center><h1>Team verwalten</h1></center>
 				<div id="team_div" class="div50a">
 					<h2>Team</h2>
 					<table>';
-					
-				foreach($students as $row)
-				{
-					$student = $this->db->selectUserByID($row->STUDENTID);
-					echo '<tr><td>'.$student->firstname.' '.$student->lastname.'</td></tr>';
-				}
-				
-		echo '</table>
+
+        foreach ($students as $row) {
+            $student = $this->db->selectUserByID($row->STUDENTID);
+            echo '<tr><td>' . $student->firstname . ' ' . $student->lastname . '</td></tr>';
+        }
+
+        echo '</table>
 				</div>
 				<div id="edit_div" class="div50a">
 					<h2>&Uuml;bersicht</h2>
 					<table>
 						<tr>
 							<td>Projekt Arbeitstitel <input type="button" class="button_s" value="+"/></td>
-							<td><input type="text" value="'.$project->title.'"disabled/></td>
+							<td><input type="text" value="' . $project->title . '"disabled/></td>
 						</tr>
 						<tr>
 							<td>Projekt Kurzbeschreibung <input type="button" class="button_s" value="+"/></td>
-							<td><input type="text" value="'.$project->task.'" disabled/></td>
+							<td><input type="text" value="' . $project->task . '" disabled/></td>
 						</tr>
 						<tr>
 							<td>Ausf&uuml;hrliche Beschreibung <input type="button" class="button_s" value="+"/></td>
-							<td><input type="text" value="'.$project->idea_description.'" disabled/></td>
+							<td><input type="text" value="' . $project->idea_description . '" disabled/></td>
 						</tr>
 					</table>
 				</div>
 				<div id="data_div" class="div50a">
 					<h2>Abgaben</h2>
 				<table>';
-					
-				foreach($milestones as $row)
-				{
-					echo '<tr><td>Beschreibung: '.$row->description.' Abgabe: '.$row->deadline.'<input type="button" class="button_s" value="..."/></td></tr>';
-				}
-						
-		echo	'</table>
+
+        foreach ($milestones as $row) {
+            echo '<tr><td>Beschreibung: ' . $row->description . ' Abgabe: ' . $row->deadline . '<input type="button" class="button_s" value="..."/></td></tr>';
+        }
+
+        echo '</table>
 					</div>
 					<div id="upload_div" class="div50a">
 						<h2>Hochladen</h2>
@@ -201,19 +197,18 @@ class Student
 						<h2>Logbuch</h2>
 						<input type="search" id="log" list="log_list" placeholder="Eintrag ausw&auml;hlen..."/><br/><br/>
 							<datalist id="log_list">';
-				
-				foreach($logbook as $row)
-				{
-					echo '<option>'.$row->entry.'</option>';
-				}
-								
-		echo				'</datalist>
+
+        foreach ($logbook as $row) {
+            echo '<option>' . $row->entry . '</option>';
+        }
+
+        echo '</datalist>
 						<input type="button" id="addLog" class="button_m" value="Eintrag hinzuf&uuml;gen"/>
 					</div>
 					<div style="clear: both"></div>
 				</div>
 			</div>';
-	}
+    }
 }
 
 ?>
