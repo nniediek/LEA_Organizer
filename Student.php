@@ -11,11 +11,19 @@ class Student
 
     public function __construct()
     {
+		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 3 ) {
+			return;
+		}
         $this->db = new StudentDatabase();
     }
 
     public function showHome()
     {
+		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 3 ) {
+			echo "<br>no Permission to Student   ".$_SESSION["permission"];
+			return;
+		}
+		
         $checkForProject = $this->db->getProject($_SESSION["userID"]);
 
         if ($checkForProject == null)
@@ -27,22 +35,10 @@ class Student
     //first view, if the student is not in a project yet
     public function showCreateTeam()
     {
-        echo '<!DOCTYPE html>
-
-			<html>
-
-				<head>
-					<title> </title>
-					<meta charset="UTF-8">
-					<link href="CSS/style.css" rel="stylesheet" type="text/css"/>
-					<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-					<script type="text/javascript" src="script/student.js"></script>
-					
-				</head>	
-				<body>
-					<div id="wrapper">
-				';
-
+		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 3 ) {
+			echo "<br>no Permission to Student";
+			return;
+		}
         include 'header.php';
 
         //creates a team after pressing the submit button
@@ -53,7 +49,6 @@ class Student
 
                 $error = false;
                 if (count($teamMembers) >= 2 && count($teamMembers <= 3)) {
-                    //array_push($teamMembers, "ibw2h16ace");
 
                     for ($i = 0; $i < count($teamMembers); $i++) {
                         if ($this->db->isInProject($teamMembers[$i])) {
@@ -138,6 +133,12 @@ class Student
 
     public function showStudent()
     {
+		
+		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 3 ) {
+			echo "<br>no Permission to Student";
+			return;
+		}
+		
         //$students = $this->db->getProjectMembers($_SESSION["userID"]);
         $leaid = $this->db->getLeaID($_SESSION["userID"])->LEAID;
         $project = $this->db->getProject($_SESSION["userID"]);
@@ -170,16 +171,7 @@ class Student
             die;
         }
 
-        echo '<head>
-					<title> </title>
-					<meta charset="UTF-8">
-					<link href="CSS/style.css" rel="stylesheet" type="text/css"/>
-					<link href="CSS/popupStyle.css" rel="stylesheet" type="text/css"/>
-					
-					<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-					<script type="text/javascript" src="script/student.js"></script>
-					<script type="text/javascript" src="script/popupBox.js"></script>
-				</head>	';
+       
 
         include 'header.php';
 

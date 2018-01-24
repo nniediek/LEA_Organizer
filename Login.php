@@ -7,7 +7,7 @@ use LEO\Model\LoginDatabase;
 class Login
 {
     private $db;
-
+	
     public function __construct()
     {
         $this->db = new LoginDatabase();
@@ -16,7 +16,7 @@ class Login
     public function showLogin()
     {
         var_dump($_POST);
-
+    
         echo '<div id="login">
 				<img src="img/logo.png" class="logo">';
 
@@ -42,7 +42,7 @@ class Login
 				</fieldset>
 			</form>
 			<hr>
-			<a href="?controller=LeaManager&do=showHome">FORCE LOGIN LEAManager</a>
+			<a href="?controller=Login&do=forceLoginLeaManager">FORCE LOGIN LEAManager</a>
 			<hr>
 		</div>';
     }
@@ -58,7 +58,6 @@ class Login
         $dn = "DC=pb,DC=bib,DC=de";
         $ldap_port = 389;
 
-        echo "Test";
 
         if ($connect = ldap_connect($ldap_address, $ldap_port)) {
             // Verbindung erfolgreich
@@ -79,6 +78,7 @@ class Login
                     ldap_close($connect);
 
                     $controller = "";
+
 
                     switch ($_SESSION["permission"]) {
                         case 1:
@@ -111,6 +111,12 @@ class Login
         }
     }
 
+	function forceLoginLeaManager(){
+		 $_SESSION["permission"] = 1;
+		 $_SESSION["username"] = "Forced LeaManager";
+		 header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=LeaManager&do=showHome');
+         die;
+	}
     function logoutUser()
     {
 

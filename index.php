@@ -22,10 +22,17 @@ spl_autoload_register(function ($className) {
 
     <link href="CSS/style.css" rel="stylesheet" type="text/css"/>
     <link href="CSS/style_gui.css" rel="stylesheet" type="text/css"/>
+   
+
     <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="script/leamanager.js"></script>
+    <script type="text/javascript" src="script/student.js"></script>
+    <script type="text/javascript" src="script/popupBox.js"></script>
+
+
 </head>
 <body>
+
 <div id="wrapper">
 
     <?php
@@ -77,7 +84,6 @@ spl_autoload_register(function ($className) {
     }
 
     ?>
-    </main>
 </div>
 </body>
 </html>

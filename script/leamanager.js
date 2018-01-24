@@ -1,5 +1,8 @@
 $(document).ready(function(){
     
+    //For createLea() and updateLea()
+    
+    //Button for picking and deleting classes
     $("#aClasses").focus(function(){
         $("#pickClass").show();
         $("#delClass").hide();
@@ -35,7 +38,7 @@ $(document).ready(function(){
 	}); 
     
         
-    $("#saveLEA").focus(function(){
+    $(".leasubmit").focus(function(){
         $("#aClasses").children("option").each(function(){
             $(this).prop("selected",false);
         });
@@ -80,16 +83,44 @@ $(document).ready(function(){
 			modal.style.display = "none";
 		}
 
-		// When the user clicks anywhere outside of the modal, close it
-		window.onclick = function(event) {
-			if (event.target == modal) {
-				modal.style.display = "none";
-			}
-		}
-		
-		$( function() {
-			$( "#datepicker" ).datepicker();
-		});
-		
-    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    var sub = document.getElementById("milestoneSub");
+    var input = document.getElementById("description");
+    var deadline = document.getElementById("deadline");
+
+    sub.onclick = function(){
+
+        if(description.value.length > 0 && deadline.value.length > 0){
+            document.getElementById("deadline").style.border = "1px solid black";
+            document.getElementById("description").style.border = "1px solid black";
+            return true;
+        }
+        else{
+            if(description.value.length == 0){	
+                if(deadline.value != ""){
+                document.getElementById("deadline").style.border = "1px solid black";
+                }
+                document.getElementById("description").style.border = "1px solid red";
+                document.getElementById("description").placeholder="Bitte geben Sie eine Meilensteinbeschreibung ein!";
+                return false;
+            }
+            else{
+                if(deadline.value == ""){
+                    if(description.value != 0){
+                        document.getElementById("description").style.border = "1px solid red";
+                    }
+
+                    document.getElementById("description").style.border = "1px solid black";	
+                    document.getElementById("deadline").style.border = "1px solid red";
+                    return false;
+                }
+            }
+        }
+    }
 });					
