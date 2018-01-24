@@ -2,7 +2,7 @@
 
 namespace LEO;
 
-use LEO\Model\Database;
+use LEO\Model\LoginDatabase;
 
 class Login
 {
@@ -10,7 +10,7 @@ class Login
 
     public function __construct()
     {
-        $this->db = new Database();
+        $this->db = new LoginDatabase();
     }
 
     public function showLogin()

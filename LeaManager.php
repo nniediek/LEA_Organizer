@@ -2,7 +2,7 @@
 
 namespace LEO;
 
-use LEO\Model\Database;
+use LEO\Model\LeaManagerDatabase;
 
 class LeaManager
 {
@@ -10,7 +10,7 @@ class LeaManager
 
     public function __construct()
     {
-        $this->db = new Database();
+        $this->db = new LeaManagerDatabase();
     }
 
     public function showHome()

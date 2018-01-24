@@ -2,7 +2,7 @@
 
 namespace LEO;
 
-use LEO\Model\Database;
+use LEO\Model\StudentDatabase;
 
 class Student
 {
@@ -11,7 +11,7 @@ class Student
 
     public function __construct()
     {
-        $this->db = new Database();
+        $this->db = new StudentDatabase();
     }
 
     public function showHome()
@@ -54,7 +54,6 @@ class Student
                 $error = false;
                 if (count($teamMembers) >= 2 && count($teamMembers <= 3)) {
                     //array_push($teamMembers, "ibw2h16ace");
-                    $db = new Database();
 
                     for ($i = 0; $i < count($teamMembers); $i++) {
                         if ($this->db->isInProject($teamMembers[$i])) {
@@ -64,7 +63,7 @@ class Student
                     }
 
                     if ($error == false) {
-                        $db->createProject($teamMembers);
+                        $this->db->createProject($teamMembers);
                         header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=Student&do=showStudent');
                         die;
                     }
@@ -139,14 +138,51 @@ class Student
 
     public function showStudent()
     {
-        include 'header.php';
-
         //$students = $this->db->getProjectMembers($_SESSION["userID"]);
         $leaid = $this->db->getLeaID($_SESSION["userID"])->LEAID;
         $project = $this->db->getProject($_SESSION["userID"]);
         $students = $this->db->getProjectMembers($_SESSION["userID"], $project->ID);
         $milestones = $this->db->getMilestones($leaid);
         $logbook = $this->db->getLogbook($project->ID);
+
+
+        if (isset($_POST["editProject"])) {
+
+            //validieren auf:
+            //-Maximallänge der Eingaben
+            //-Minimallänge
+
+            $table = $_POST["sqlTable"];
+            $column = $_POST["sqlColumn"];
+            $value = $_POST[$column . "Value"];
+
+
+            //$breaks = array("\n","<br />","<br>","<br/>");
+            //$value = str_ireplace($breaks, "\u1000", $value);
+
+            /* $value = nl2br(htmlentities($value, ENT_QUOTES, 'UTF-8')); */
+            $this->db->updateSingleValue($table, $column, $value, $project->ID);
+
+            /* echo $project->idea_description;
+            die; */
+
+            header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=Student&do=showStudent');
+            die;
+        }
+
+        echo '<head>
+					<title> </title>
+					<meta charset="UTF-8">
+					<link href="CSS/style.css" rel="stylesheet" type="text/css"/>
+					<link href="CSS/popupStyle.css" rel="stylesheet" type="text/css"/>
+					
+					<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+					<script type="text/javascript" src="script/student.js"></script>
+					<script type="text/javascript" src="script/popupBox.js"></script>
+				</head>	';
+
+        include 'header.php';
+
 
         echo '<div id="team_overview">
 				<center><h1>Team verwalten</h1></center>
@@ -165,17 +201,43 @@ class Student
 					<h2>&Uuml;bersicht</h2>
 					<table>
 						<tr>
-							<td>Projekt Arbeitstitel <input type="button" class="button_s" value="+"/></td>
-							<td><input type="text" value="' . $project->title . '"disabled/></td>
+							<td>Projekt Arbeitstitel
+								<input type="button" id="edit__project__title" class="button_s button_edit" value="+"/>
+							</td>
+							<td>
+								<input type="text" id="titleDisplay" value="' . $this->showFirstLine($project->title) . '"disabled/>
+							</td>
 						</tr>
 						<tr>
-							<td>Projekt Kurzbeschreibung <input type="button" class="button_s" value="+"/></td>
-							<td><input type="text" value="' . $project->task . '" disabled/></td>
+							<td>Projekt Kurzbeschreibung
+								<input type="button" id="edit__project__task" class="button_s button_edit" value="+"/>
+							</td>
+							<td>
+								<input type="text" id="taskDisplay" value="' . $this->showFirstLine($project->task) . '" disabled/>
+							</td>
 						</tr>
 						<tr>
-							<td>Ausf&uuml;hrliche Beschreibung <input type="button" class="button_s" value="+"/></td>
-							<td><input type="text" value="' . $project->idea_description . '" disabled/></td>
+							<td>Ausf&uuml;hrliche Beschreibung
+								<input type="button" id="edit__project__idea_description" class="button_s button_edit" value="+"/>
+							</td>
+							<td>
+								<input type="text" id="idea_descriptionDisplay" value="' . $this->showFirstLine($project->idea_description) . '" disabled/>
+							</td>
 						</tr>
+						<form id="editProjectForm" method="post">
+							<div id="dialogbox"><!---Die zu öffnende box-->
+								<div id="dialogboxcontent">
+									<label id="popupTitle"></label>
+									<span id="close">close</span>
+									<textarea id="titleBigText" class="bigTextArea" name="titleValue">' . $project->title . '</textarea>
+									<textarea id="taskBigText" class="bigTextArea" name="taskValue">' . $project->task . '</textarea>
+									<textarea id="idea_descriptionBigText" class="bigTextArea" name="idea_descriptionValue">' . $project->idea_description . '</textarea>
+									<input id="sqlTable" name="sqlTable" type="hidden" value=""/>
+									<input id="sqlColumn" name="sqlColumn" type="hidden" value=""/>
+									<input class="button" type="submit"  name="editProject" value="Bestätigen"/>
+								</div>
+							</div>
+						</form>
 					</table>
 				</div>
 				<div id="data_div" class="div50a">
@@ -209,6 +271,15 @@ class Student
 				</div>
 			</div>';
     }
+
+    private function showFirstLine($text)
+    {
+        $line = substr($text, 0, strpos($text, PHP_EOL));
+        if (strlen($line) == 0) $line = $text;
+        return $line;
+    }
+
+
 }
 
 ?>
