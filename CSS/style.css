@@ -397,12 +397,16 @@ table {
 }
 
 #ul {
-    width: 46.5%;
+    width: 93%;
     float: left;
     overflow: scroll;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+    /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);*/
     margin: 5px;
     height: 290px;
+}
+
+#ms_table {
+	width: 100%;
 }
 
 #class_select {
@@ -436,15 +440,6 @@ table {
     margin: 0px;
     padding: 0px;
     text-align: center;
-}
-
-#ur {
-    width: 46.5%;
-    float: right;
-    padding-top: 20px;
-    height: 270px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
-    margin: 5px;
 }
 
 #autoform {

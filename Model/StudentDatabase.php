@@ -229,5 +229,56 @@ class StudentDatabase extends Database
             print "Error!: " . $e->getMessage() . "<br/>";
         }
     }
+	
+	//Check if there is already a file uploaded for a certain Milestone
+	public function checkFile($pid,$mid)
+	{
+		$sql = "SELECT ID FROM DOCUMENT WHERE PROJECTID ='".$pid."' AND MILESTONEID = '".$mid."'";
+		if(!$this->querySR($sql))
+			return false;
+		else
+			return true;
+	}
+	
+	//Upload File for specific Milestone (ProjectID, MilestoneID)
+	public function uploadFile($pid, $mid){
+		
+		//Possibility to limit valid data types
+		//$validTypes = ["jpg","txt","pdf"];
+		
+		$uploaddir = 'uploads/';
+		$filename = explode(".",$_FILES['msFile']['name'])[0];
+		$type = explode(".",$_FILES['msFile']['name'])[1];
+		$id = $this->createUUID();
+		$uploadfile = $uploaddir.$filename.'_'.$id.'.'.$type;
+
+		if(move_uploaded_file($_FILES['msFile']['tmp_name'], $uploadfile)) {			
+			$sql = "INSERT INTO DOCUMENT (ID, PATH, PROJECTID, MILESTONEID) VALUES ('".$id."','".$uploadfile."','".$pid."','".$mid."')";
+			$db = $this->linkDB();
+			$db->query($sql);
+			header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showHome');	
+		} 
+		else {
+			echo "Möglicherweise eine Dateiupload-Attacke!\n";
+		}
+	}
+	
+	//Delete uploaded File from DB and from Server
+	public function deleteFile($pid, $mid){
+		//Delete from Server
+		$sql = "SELECT path FROM DOCUMENT WHERE PROJECTID = '".$pid."' AND MILESTONEID = '".$mid."'";
+		$filepath = $this->querySR($sql)->path;
+		unlink($filepath);
+		
+		//Delete from DB
+		$sql = "DELETE FROM DOCUMENT WHERE PROJECTID = '".$pid."' AND MILESTONEID = '".$mid."'";
+		$db = $this->linkDB();
+		$db->query($sql);	
+		
+		//Redirect
+		header('Location: '. $_SERVER['PHP_SELF'] . '?controller=Student&do=showHome');	
+		die;
+		break;
+	}
 
 }

@@ -133,7 +133,7 @@ class Student
 
     public function showStudent()
     {
-		echo ' <link href="CSS/popupStyle.css" rel="stylesheet" type="text/css"/>';
+	
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 3 ) {
 			echo "<br>no Permission to Student";
 			return;
@@ -145,6 +145,7 @@ class Student
         $students = $this->db->getProjectMembers($_SESSION["userID"], $project->ID);
         $milestones = $this->db->getMilestones($leaid);
         $logbook = $this->db->getLogbook($project->ID);
+		$_SESSION["pid"] = $project->ID;
 
 
         if (isset($_POST["editProject"])) {
@@ -217,6 +218,7 @@ class Student
 							</td>
 						</tr>
 						<form id="editProjectForm" method="post">
+					
 							<div id="dialogbox"><!---Die zu öffnende box-->
 								<div id="dialogboxcontent">
 									<label id="popupTitle"></label>
@@ -236,9 +238,34 @@ class Student
 					<h2>Abgaben</h2>
 				<table>';
 
-        foreach ($milestones as $row) {
-            echo '<tr><td>Beschreibung: ' . $row->description . ' Abgabe: ' . $row->deadline . '<input type="button" class="button_s" value="..."/></td></tr>';
-        }
+				foreach($milestones as $row)
+				{
+					echo '<tr>
+						<td>Beschreibung: '.$row->description.' Abgabe: '.$row->deadline.'&#09;';
+					
+					if($this->db->checkFile($project->ID,$row->ID)){
+						echo'<input type="button" value="&#10004" disabled/>
+							<form method="POST" style="display:inline;">
+							<input type="hidden" name="ms" value="'.$row->ID.'"
+							<input type="hidden" name="controller" value="Student"/>
+							<input type="hidden" name="do" value="deleteFile"/>
+							<input type="submit" value="&#10008;"/>
+							</form>
+							</td>
+							</tr>';		
+					}
+					else{
+						echo'<form method="POST" enctype="multipart/form-data">
+							<input type="hidden" name="ms" value="'.$row->ID.'"
+							<input type="hidden" name="controller" value="Student"/>
+							<input type="hidden" name="do" value="uploadFile"/>
+							<input type="file" name="msFile" value="..."/>
+							<input type="submit" value="Upload"/>
+							</form>
+							</td>
+							</tr>';
+					}
+				}
 
         echo '</table>
 					</div>
@@ -263,14 +290,25 @@ class Student
 				</div>
 			</div>';
     }
-
+	
     private function showFirstLine($text)
     {
         $line = substr($text, 0, strpos($text, PHP_EOL));
         if (strlen($line) == 0) $line = $text;
         return $line;
     }
-
+	
+	public function uploadFile()
+	{
+		$pid = $this->db->getProject($_SESSION["userID"])->ID;
+		$this->db->uploadFile($pid, $_POST["ms"]);
+	}
+	
+	public function deleteFile()
+	{
+		$pid = $this->db->getProject($_SESSION["userID"])->ID;
+		$this->db->deleteFile($pid, $_POST["ms"]);
+	}
 
 }
 
