@@ -15,12 +15,12 @@ class Login
 
     public function showLogin()
     {
-        var_dump($_POST);
     
         echo '<div id="login">
 				<img src="img/logo.png" class="logo">';
 
-        if (isset($_SESSION["error"])) {
+        // if wrong username/password was wrong show error message
+		if (isset($_SESSION["error"])) {
             echo '<h2 style="color: red">Falsche Benutzerdaten </h2>';
         }
 
@@ -59,12 +59,13 @@ class Login
         $ldap_port = 389;
 
 
-        if ($connect = ldap_connect($ldap_address, $ldap_port)) {
-            // Verbindung erfolgreich
+        // connect to the ldap
+		if ($connect = ldap_connect($ldap_address, $ldap_port)) {
+            // connection success
             ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, 3);
             ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
 
-            // Authentifizierung des Benutzers -- pw und username dürfen nicht null sein, da ldap_bind sonst nicht richtig läuft
+            // authendification of the user -- user and pw shouldn't be null
             if (@$bind = ldap_bind($connect, $domain . "\\" . $username, $pw) && $pw != null && $username != null) {
 
                 $user = $this->db->selectUserByUsername($username);
@@ -91,10 +92,13 @@ class Login
                             $controller = "Student";
                             break;
                     }
-                    if (isset($_SESSION["error"])) {
+                    
+					// unset error after successful login
+					if (isset($_SESSION["error"])) {
                         unset($_SESSION["error"]);
                     }
 
+					// call showHome after login
                     header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=' . $controller . '&do=showHome');
                     die;
 
@@ -107,19 +111,20 @@ class Login
 
             }
 
-            //echo $_SESSION["group"];
         }
     }
 
+	// for development reasons needed
 	function forceLoginLeaManager(){
 		 $_SESSION["permission"] = 1;
 		 $_SESSION["username"] = "Forced LeaManager";
 		 header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=LeaManager&do=showHome');
          die;
 	}
+	
+	// destroys session and returns to login screen
     function logoutUser()
     {
-
         if (isset($_SESSION["username"])) {
             session_destroy();
             $_SESSION = array();

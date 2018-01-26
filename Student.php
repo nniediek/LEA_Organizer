@@ -133,7 +133,7 @@ class Student
 
     public function showStudent()
     {
-	
+		
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 3 ) {
 			echo "<br>no Permission to Student";
 			return;
@@ -222,13 +222,13 @@ class Student
 							<div id="dialogbox"><!---Die zu öffnende box-->
 								<div id="dialogboxcontent">
 									<label id="popupTitle"></label>
-									<span id="close">close</span>
+									<span class="popUpClose" >close</span>
 									<textarea id="titleBigText" class="bigTextArea" name="titleValue">' . $project->title . '</textarea>
 									<textarea id="taskBigText" class="bigTextArea" name="taskValue">' . $project->task . '</textarea>
 									<textarea id="idea_descriptionBigText" class="bigTextArea" name="idea_descriptionValue">' . $project->idea_description . '</textarea>
 									<input id="sqlTable" name="sqlTable" type="hidden" value=""/>
 									<input id="sqlColumn" name="sqlColumn" type="hidden" value=""/>
-									<input class="button" type="submit"  name="editProject" value="Bestätigen"/>
+									<input class="button_popUp" type="submit"  name="editProject" value="Bestätigen"/>
 								</div>
 							</div>
 						</form>

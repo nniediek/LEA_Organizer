@@ -179,6 +179,9 @@ p {
     border: 1px solid #888;
     width: 40%;
     height: 40%;
+	top: 25%;
+	position: relative;
+	
 
 }
 
@@ -560,7 +563,8 @@ table {
     overflow: scroll;
 }
 
-/*-----------------------------popup--------------*/
+/*-----------------------------popup Student--------------*/
+/*
 .bigTextArea{
 	width: 99%;
 	height: 80%;
@@ -634,7 +638,7 @@ label,input{
 
 #deadline{
 	margin-left: 50%;
-	/*margin-top: -5.5%;*/
+
 }
 #deadlineId{
 	margin-left: 50%;
@@ -649,3 +653,4 @@ label,input{
 #title{
 	width: 40%;
 }
+*/

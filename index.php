@@ -41,7 +41,10 @@ spl_autoload_register(function ($className) {
     $controllerName = "";
     $doMethodName = "";
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // tries to read the controller and do variable from the POST/GET-Array
+	// if set they are used for the controller, else 1. if an active login exists show home of the right user
+	// or 2. defaults are used
+	if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $controllerName = isset($_POST['controller']) && $_POST['controller'] ? $_POST['controller'] : (isset($_SESSION["permission"]) ? getController($_SESSION["permission"]) : "Login");
         $doMethodName = isset($_POST['do']) && $_POST['do'] ? $_POST['do'] : (isset($_SESSION["permission"]) ? "showHome" : "showLogin");
     } else {
@@ -49,23 +52,23 @@ spl_autoload_register(function ($className) {
         $doMethodName = isset($_GET['do']) && $_GET['do'] ? $_GET['do'] : (isset($_SESSION["permission"]) ? "showHome" : "showLogin");
     }
 
-    $controllerClassName = 'LEO\\' . ucfirst($controllerName);
+    // add namespace to the contoller
+	$controllerClassName = 'LEO\\' . ucfirst($controllerName);
 
-    echo $controllerName;
-    echo $doMethodName;
 
-    try {
-        $controller = new $controllerClassName();
+    // try to call the do function of the controller class
+	try {
+        // creates a generic class object from controller
+		$controller = new $controllerClassName();
         $controller->$doMethodName();
     } catch (Exception $e) {
         echo 'Page not found: ' . $controllerClassName . '::' . $doMethodName;
     }
 
-
+	// returns the classname according to numeric permission level of the user
     function getController($permission)
     {
         $controller = "";
-        echo $permission;
 
         switch ($permission) {
 
