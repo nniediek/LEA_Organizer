@@ -10,24 +10,14 @@ class LoginDatabase extends Database
 
     }
 
-    public function selectUserByUsername($Username)
-    {
-        $sql = "SELECT * FROM USER WHERE username = '" . $Username . "'";
-        return $this->querySR($sql);
-    }
-
-    public function selectUserByID($UserID)
-    {
-        $sql = "SELECT * FROM USER WHERE ID = '" . $UserID . "'";
-        return $this->querySR($sql);
-    }
-
 
     private function getIDFromUsername($name)
     {
         $dbc = $this->linkDB_PDO();
         echo $name;
-        $sql = "SELECT ID FROM USER WHERE username = '" . $name . "';";
+        $sql = "SELECT ID
+				FROM USER
+				WHERE username = '" . $name . "';";
 
         try {
             $stmt = $dbc->query($sql);
@@ -46,7 +36,9 @@ class LoginDatabase extends Database
     {
         $dbc = $this->linkDB_PDO();
         // select instructor with $username
-        $sql = "SELECT i.isManager FROM INSTRUCTOR i,USER u WHERE  i.USERID = u.ID AND u.username = '" . $username . "'";
+        $sql = "SELECT i.isManager
+				FROM INSTRUCTOR i,USER u
+				WHERE  i.USERID = u.ID AND u.username = '" . $username . "'";
 
         try {
             $stmt = $dbc->query($sql);
@@ -68,7 +60,9 @@ class LoginDatabase extends Database
             }
         } else {
             // try to select student with $username
-            $sql = "SELECT * FROM STUDENT i,USER u WHERE  i.USERID = u.ID AND u.username = '" . $username . "'";
+            $sql = "SELECT *
+					FROM STUDENT i,USER u
+					WHERE  i.USERID = u.ID AND u.username = '" . $username . "'";
 
             try {
                 $stmt = $dbc->query($sql);

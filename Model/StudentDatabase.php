@@ -10,7 +10,6 @@ class StudentDatabase extends Database
 
     }
 
-
     public function getLeaID($UserID)
     {
         $sql = "SELECT LEAID 
@@ -33,7 +32,6 @@ class StudentDatabase extends Database
 
     public function getMilestones($LeaID)
     {
-
         $sql = "SELECT * FROM MILESTONE WHERE LEAID = '" . $LeaID . "'";
         return $this->queryMR($sql);
     }
@@ -41,7 +39,6 @@ class StudentDatabase extends Database
 
     public function getProjectMembers($UserID, $ProjectID)
     {
-
         $sql = "SELECT STUDENTID FROM STUDENT_HAS_PROJECT WHERE PROJECTID='" . $ProjectID . "'";
         return $this->queryMR($sql);
     }
@@ -52,13 +49,7 @@ class StudentDatabase extends Database
         return $this->queryMR($sql);
     }
 
-    public function selectUserByID($UserID)
-    {
-        $sql = "SELECT * FROM USER WHERE ID = '" . $UserID . "'";
-        return $this->querySR($sql);
-    }
-
-    // ---------------------------Team erstellen-------------------------------
+    // ---------------------------create team-------------------------------
 
     // Returns all available team members for a project
     // (students within the same LEA and without a team)
@@ -81,7 +72,6 @@ class StudentDatabase extends Database
 							AND STUDENT.USERID = '" . $studentID . "')
 					AND STUDENT.USERID NOT IN (SELECT STUDENTID FROM STUDENT_HAS_PROJECT)
 					AND STUDENT.USERID <> '" . $studentID . "';";
-        //TODO check LEA date
         try {
             $stmt = $dbc->query($sql);
         } catch (PDOException $e) {
@@ -90,7 +80,6 @@ class StudentDatabase extends Database
 
         $stmt->setFetchMode(\PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
-
 
         return $res;
     }
@@ -125,7 +114,6 @@ class StudentDatabase extends Database
         $LEAID = $this->getLEAIDFromStudent($ids[0]);
         $dummyID = $this->getDummyID();
 
-
         $sql = "INSERT INTO `PROJECT`(`ID`, `idea_description`, `task`, `title`, `LEAID`, `INSTRUCTORID`)
 				VALUES ('" . $projectID
             . "','Bitte Beschreibung hinzufügen','Bitte Kurzbeschreibung hinzufügen','Bitte Titel hinzufügen.','"
@@ -141,13 +129,11 @@ class StudentDatabase extends Database
         }
 
         $this->addMembersToProject($projectID, $ids);
-
     }
 
     //Returns the ID of the dummy intructor:
     private function getDummyID()
     {
-
         $dbc = $this->linkDB_PDO();
         $sql = "SELECT ID
 				FROM USER
@@ -163,7 +149,6 @@ class StudentDatabase extends Database
         $res = $stmt->fetchAll();
 
         return $res[0]["ID"];
-
     }
 
     private function addMembersToProject($projectID, $memberIDs)
@@ -174,13 +159,11 @@ class StudentDatabase extends Database
             $sql = "INSERT INTO `STUDENT_HAS_PROJECT`(`STUDENTID`, `PROJECTID`)
 					VALUES ('" . $memberIDs[$i]
                 . "', '" . $projectID . "')";
-
             try {
                 $stmt = $dbc->query($sql);
             } catch (PDOException $e) {
                 print "Error!: " . $e->getMessage() . "<br/>";
             }
-
         }
     }
 
@@ -219,7 +202,6 @@ class StudentDatabase extends Database
 					AND LEA.startdate <= CURRENT_DATE
 					AND LEA.enddate >= CURRENT_DATE
 					AND STUDENTID = '" . $this->getIDFromUsername($studentName) . "'";
-
         try {
             $stmt = $dbc->query($sql);
         } catch (PDOException $e) {
@@ -228,7 +210,6 @@ class StudentDatabase extends Database
 
         $stmt->setFetchMode(\PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
-
 
         if (count($res) == 0) return false;
         else return true;

@@ -4,6 +4,11 @@ use LEO\Model\LeaManagerDatabase;
 class LeaManager
 {
     private $db;
+	private $errors = array();
+	private $validData = array();
+	private $labels = array("from" => "Von", "till" => "Bis" );
+	private $labelsMilestone = array("deadline" => "Abgabetermin" , "description" => "Beschreibung");
+	
     public function __construct()
     {
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
@@ -48,7 +53,15 @@ class LeaManager
                             <input type="hidden" name="controller" value="LeaManager"/>
 							<input type="hidden" name="do" value="showUpdateLea"/>
                             <input type="hidden" id="LeaID" name="LeaID" value="'.$row->ID.'"/>
-							<input type="submit" id="update_lea" name="edit" value="LEA-&Uuml;bersicht" class="button_m">
+							<input type="submit" id="update_lea" name="edit" value="LEA-Bearbeiten" class="button_m">
+						</div>
+					</form>
+					<form method="POST">
+						<div class="buttons">
+                            <input type="hidden" name="controller" value="LeaManager"/>
+							<input type="hidden" name="do" value="showLeaStatus"/>
+                            <input type="hidden" id="LeaID" name="LeaID" value="'.$row->ID.'"/>
+							<input type="submit" id="update_lea" name="edit" value="LEA Übersicht" class="button_m">	
 						</div>
 					</form>
 				</div>';
@@ -125,7 +138,7 @@ class LeaManager
 											</div>
 										</div>
 										<input type="hidden" name="controller" value="LeaManager"/>
-										<input type="hidden" name="do" value="saveLEA"/>
+										<input type="hidden" name="do" value="validateCreateLEA"/>
 										<input type="submit" class="button_m leasubmit" value="Speichern" id="saveLEA"/>
 									</form>
 								</div>
@@ -134,13 +147,17 @@ class LeaManager
 	}
     
     public function showUpdateLea(){
-        
+		
+        echo '<script type="text/javascript" src="script/editLEA.js"></script>';
+		
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
 		
-        $Lea = $this->db->getLeaByID($_POST['LeaID']);
+
+			$Lea = $this->db->getLeaByID($_POST['LeaID']);
+		
         $classesTotal = $this->db->getClasses();
         $classesSelected = $this->db->getClassesByLeaID($Lea->ID);
         $Milestones = $this->db->getMilestones($Lea->ID);
@@ -242,7 +259,7 @@ class LeaManager
 
 
                                         <input type="hidden" name="LeaID" value="'.$Lea->ID.'"/>
-                                        <input type="hidden" name="do" value="addMilestone"/>
+                                        <input type="hidden" name="do" value="validateAddMilestone"/>
                                         <input type="hidden" name="controller" value="LeaManager"/>
                                         <input class="button" id="milestoneSub" type="submit" value="Best&auml;tigen"/>
 
@@ -251,6 +268,118 @@ class LeaManager
                             ';
 	}
     
+	public function showLeaStatus(){
+        
+		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
+			echo "<br>no Permission to LeaManager";
+			return;
+		}
+		
+        $Lea = $this->db->getLeaByID($_POST['LeaID']);
+		$Milestones = $this->db->getMilestones($Lea->ID);
+		$Projects = $this->db->getProjects($Lea->ID);
+		$docCountLea = $this->db->getMilestoneCount($Lea->ID)->c;
+		$teamless = $this->db->getTeamless($Lea->ID);
+		$totalDocs = count($Projects);
+		
+		
+		include 'header.php';
+		
+		echo'<form>
+			<input type="hidden" name="controller" value="LeaManager"/>
+			<input type="hidden" name="do" value="showHome"/>
+			<input type="submit" class="button_m floatR" id="showHome" value="Zur&uuml;ck"/>
+			</form>
+			<div id="lea_overview">
+				<div class="lea_title">'
+					.$Lea->title.
+				'</div>
+				<div id="cul">
+					<input type="search" id="class_select" list="class_list" placeholder="Nach Klassen suchen...">
+					<datalist id="class_list">
+						<option value="Alle Klassen">Alle Klassen</option>
+						<option value="ibd2h16a" class="class_option"></option>
+						<option value="ibw2h16a" class="class_option"></option>
+						<option value="ibm2h16a" class="class_option"></option>
+					</datalist>
+					</input>
+				</div>
+				<div style="clear: both"></div>
+				<div id="ul">
+					
+				<table id="ms_table">
+					<tr>
+						<th>Meilenstein</th>
+						<th>Deadline</th>
+						<th>Abgaben</th>
+					</tr>';
+						
+		foreach($Milestones as $row)
+		{	
+			$enteredDocs = $this->db->getDocsForMilestone($row->ID)->c;
+			
+			echo'<tr class="ms_table_row">
+					<td>'.$row->description.'</td>
+					<td>'.$row->deadline.'</td>
+					<td>'.$enteredDocs.'/'.$totalDocs.'</td>
+				</tr>';
+		}
+			
+		echo'	</table>
+				</div>
+			
+				<div id="bl">
+					<table id="teams_table">
+						<th>Teams</th>
+						<th>Abgaben</th>';
+						
+		foreach($Projects as $row)	
+		{
+			$pid = $row->ID;
+			$pmembers = $this->db->getProjectMembers($pid);
+			$docCountProject = $this->db->getDocumentCount($pid)->c;
+			
+			echo'<tr class="teams_table_row">
+					<td>
+						Team &lt;';
+						$lastMember = end($pmembers);
+						foreach($pmembers as $row)
+						{
+							if($row != $lastMember && !empty($row))
+								echo $row->firstname.' '.$row->lastname.','; 
+							else
+								echo $row->firstname.' '.$row->lastname;					
+						}	
+						
+			echo		'&gt;
+						<input type="submit" name="edit" value="Mail">
+						<input type="submit" name="edit" value="Team angucken">
+					</td>
+					<td>'.
+						$docCountProject.'/'.$docCountLea
+					.'</td>
+				</tr>';
+					
+		}
+		
+		echo'   </table>
+				</div>
+				<div id="br">
+					<table id="teamless_table">
+					<th>Teamlose Studis</th>';
+					
+		foreach($teamless as $row)
+		{
+			echo'<tr class="teamless_table_row">
+					<td>'.$row->firstname.' '.$row->lastname.'</td>
+				</tr>';
+		}
+		
+		echo'		</table>
+				</div>	
+			</div>';
+	}
+
     public function updateLEA(){
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
@@ -265,8 +394,9 @@ class LeaManager
 			echo "<br>no Permission to LeaManager";
 			return;
 		}	
-		$this->db->writeLEA($_POST);
-		$this->showHome();
+		$ID = $this->db->writeLEA($this->validData);
+		$_POST['LeaID'] = $ID;
+		$this->showUpdateLEA();
 	}
     
     public function addMilestone(){
@@ -279,19 +409,64 @@ class LeaManager
         $this->showUpdateLea();
     }
 	
-	public function validateForm(){
-        foreach ($this->labels as $index => $value) {
+	public function sendMailTest() {
+		
+	$empfaenger = 'nils.niediek@bi.bib.de';
+	$betreff = 'Der Betreff';
+	$nachricht = 'Hallo';
+	$header = 'From: julius.boecker@bi.bib.de' . "\r\n" .
+    'Reply-To: webmaster@example.com' . "\r\n" .
+    'X-Mailer: PHP/' . phpversion();
+
+	mail($empfaenger, $betreff, $nachricht, "From: <julius.boecker@bi.bib.de>");
+		echo 'läuft';
+	}
+	
+	public function validateCreateLEA(){
+				
+		
+         foreach ($this->labels as $index => $value) {
+			
             if (!isset($_POST[$index]) || empty($_POST[$index])) {
                 $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
-            } else if ($index == "entry" && strlen($_POST[$index]) <= 6) {
-                $this->errors[$index] = "Kommentar muss l&auml;nger als 6 Zeichen sein!<br>";
-            } else if ($index == "iName" && !preg_match('/^.*jpg$/', $_POST[$index])) {
-                $this->errors[$index] = "Dateiformat muss .jpg sein!<br>";
-            } else {
-                $this->validData[$index] = filter_input(INPUT_POST, $index, FILTER_DEFAULT);
+			}	
+			 
+				
+			else{
+			 
+				if(isset($_POST['selectedClasses'])){
+					// adding selectedClasses array to validData array
+					$this->validData['selectedClasses'] = array();
+					// adding each selected class to selectedClasses array
+					foreach($_POST['selectedClasses'] as $class){
+						array_push($this->validData['selectedClasses'] , $class);
+					}	
+				}
+				
+			   
+                $this->validData[$index] =  filter_input(INPUT_POST, $index, FILTER_DEFAULT);
+                
             }
-        }
-        count($this->errors) > 0 ? $this->showArticleForm() : $this->writeArticleContent($this->validData);
+		 }
+			
+			count($this->errors) > 0 ? $this->showCreateLea() : $this->saveLEA();
+		
     }
+	
+	public function validateAddMilestone(){
+		
+		 foreach ($this->labelsMilestone as $index => $value) {
+			if (!isset($_POST[$index]) || empty($_POST[$index])) {
+                $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
+			}	
+			else{
+				$this->validData[$index] =  filter_input(INPUT_POST, $index, FILTER_DEFAULT);
+			}	
+		 }
+		//	$this->validData['LEAID'] =  $_POST['LEAID'];	
+			var_dump($this->validData);
+		count($this->errors) > 0 ? $this->updateLEA() : $this->addMilestone();
+		
+	}
 }
 ?>

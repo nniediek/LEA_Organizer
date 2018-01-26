@@ -20,9 +20,10 @@ spl_autoload_register(function ($className) {
     <title>BIBLEO LEA-Organizer</title>
     <meta charset="UTF-8"/>
 
+	
     <link href="CSS/style.css" rel="stylesheet" type="text/css"/>
     <link href="CSS/style_gui.css" rel="stylesheet" type="text/css"/>
-   
+
 
     <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="script/leamanager.js"></script>

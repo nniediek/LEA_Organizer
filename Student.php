@@ -133,7 +133,7 @@ class Student
 
     public function showStudent()
     {
-		
+		echo ' <link href="CSS/popupStyle.css" rel="stylesheet" type="text/css"/>';
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 3 ) {
 			echo "<br>no Permission to Student";
 			return;

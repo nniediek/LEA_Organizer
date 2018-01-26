@@ -5,10 +5,10 @@ namespace LEO\Model;
 abstract class Database
 {
 
-    private $dbName = "ibd2h16abo_LEO";
-    private $linkName = "mysqlbi.pb.bib.de";
-    private $user = "ibd2h16abo";
-    private $pw = "7zyp4Tq6";
+    private $DB_NAME = "ibd2h16abo_LEO";
+    private $LINK_NAME = "mysqlbi.pb.bib.de";
+    private $USER = "ibd2h16abo";
+    private $PW = "7zyp4Tq6";
 
 
     public function __construct()
@@ -19,7 +19,7 @@ abstract class Database
 
     public function linkDB_mysqli()
     {
-        $db = new \Mysqli($this->linkName, $this->user, $this->pw, $this->dbName);
+        $db = new \Mysqli($this->LINK_NAME, $this->USER, $this->PW, $this->DB_NAME);
 
         if ($db->connect_error) {
             die('Connect Error (' . $db->connect_errno . ') ' . $db->connect_error);
@@ -30,8 +30,7 @@ abstract class Database
 
     public function linkDB_PDO()
     {
-
-        $db = new \PDO('mysql:host=' . $this->linkName . ';dbname=' . $this->dbName, $this->user, $this->pw);
+        $db = new \PDO('mysql:host=' . $this->LINK_NAME . ';dbname=' . $this->DB_NAME, $this->USER, $this->PW);
 
         return $db;
     }
@@ -86,6 +85,24 @@ abstract class Database
         } catch (PDOException $e) {
             print "Error!: " . $e->getMessage() . "<br/>";
         }
+    }
+
+    public function selectUserByUsername($username)
+    {
+        $sql = "SELECT *
+				FROM USER
+				WHERE username = '" . $username . "'";
+
+        return $this->querySR($sql);
+    }
+
+    public function selectUserByID($userID)
+    {
+        $sql = "SELECT *
+				FROM USER
+				WHERE ID = '" . $userID . "'";
+
+        return $this->querySR($sql);
     }
 
     public function createUUID()

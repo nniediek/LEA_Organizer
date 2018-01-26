@@ -91,6 +91,7 @@ class LeaManagerDatabase extends Database
             
             
 		}
+		return $ID;
 	}
     
     public function updateLEA($postArray)
@@ -186,5 +187,55 @@ class LeaManagerDatabase extends Database
         
         return $this->queryMR($sql);
     }
+	
+	//--------------Lea Status--------------
+	
+	public function getTeamless($LeaID){
+		$sql = "SELECT firstname, lastname
+				FROM USER
+				WHERE (ID NOT IN (SELECT STUDENTID
+								  FROM STUDENT_HAS_PROJECT) AND ID IN (SELECT USERID 
+																	   FROM STUDENT 
+																	   WHERE CLASSID IN (SELECT CLASSID 
+																						 FROM LEA_HAS_CLASS 
+																						 WHERE LEAID = '".$LeaID."')))";
+		return $this->queryMR($sql);																				 																					 
+	}
+	
+	public function getDocsForMilestone($MilestoneID){
+		$sql = "SELECT COUNT(ID) as c FROM DOCUMENT WHERE MILESTONEID = '".$MilestoneID."'";
+		
+		return $this->querySR($sql);
+	}
+
+	public function getMilestoneCount($LeaID){
+		$sql = "SELECT COUNT(ID) as c FROM MILESTONE WHERE LEAID = '".$LeaID."'";
+		
+		return $this->querySR($sql);
+	}
+
+	public function getDocumentCount($ProjectID){
+		$sql = "SELECT COUNT(ID) as c FROM DOCUMENT WHERE PROJECTID = '".$ProjectID."'";
+		
+		return $this->querySR($sql);
+	}
+
+	public function getProjects($LeaID){
+		$sql = "SELECT ID 
+				FROM PROJECT 
+				WHERE LEAID = '".$LeaID."'";
+		
+		return $this->queryMR($sql);
+	}
+
+	public function getProjectMembers($ProjectID){
+		$sql = "SELECT firstname, lastname 
+				FROM USER 
+				WHERE ID IN (SELECT STUDENTID 
+							 FROM STUDENT_HAS_PROJECT 
+							 WHERE PROJECTID = '".$ProjectID."')";
+							 
+		return $this->queryMR($sql);
+	}
   
 }
