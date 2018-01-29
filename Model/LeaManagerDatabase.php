@@ -399,5 +399,135 @@ class LeaManagerDatabase extends Database
 							 
 		return $this->queryMR($sql);
 	}
+<<<<<<< HEAD
+    
+    public function uploadCSV()
+	{		
+			$row = 0;
+			if (($handle = fopen($_FILES['file']['tmp_name'], "r")) !== FALSE) {
+
+			  while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+				if($row != 0)
+				{	
+					$user = $data[1];
+					$class = $data[0];
+					$group = $this->checkUser($user);
+					
+					if($this->checkData("USER",$user) == false)
+						$this->regUser($data);
+					else
+						echo "Nutzer ".$user." bereits vorhanden!<br/>";	
+					
+					if($this->checkData("CLASS",$class) == false)
+						$this->regClass($class);
+					else
+						echo "Klasse ".$class." bereits vorhanden!<br/>";
+					
+					$this->setGroup($data,$group);
+					
+				}
+				$row++;
+			  }
+			  fclose($handle);
+			}else{
+				echo 'Something went wrong! ';
+			}
+		
+	}
+
+	//Check if a Table already contains certain Data (for example a User or a Class)
+	public function checkData($table, $data)
+	{
+		$col = "";
+		
+		switch($table)
+		{
+			case "USER": $col = "username";
+				break;
+			case "CLASS": $col = "name";
+				break;
+		}
+		
+		$sql = "SELECT * FROM ".$table." WHERE ".$col."='".$data."'";
+		$res = $this->querySR($sql);
+		
+		if($res != null)
+			return true;
+		else 
+			return false;
+	}
+	
+	//Check which group the user has to be assigned to 
+	public function checkUser($data)
+	{
+		if(preg_match("/^ib/",$data))
+			return "STUDENT";
+		else if(preg_match("/^doz/",$data))
+			return "INSTRUCTOR";
+		else
+			return "LEAMANAGER";
+	}
+	
+	//Get UserID
+	public function getUID($user)
+	{
+		$sql = "SELECT ID FROM USER WHERE username='".$user."'";
+		$res = $this->querySR($sql);
+		return $res->ID;
+	}
+	
+	//Get ClassID
+	public function getCID($class)
+	{
+		$sql = "SELECT ID FROM CLASS WHERE name='".substr($class, 0, -2)."'";
+		$res = $this->querySR($sql);
+		return $res->ID;
+	}
+
+	//Register user
+	public function regUser($data)
+	{	
+		$uuid = $this->createUUID();
+		$sql = "INSERT INTO USER(ID,email,firstname,lastname,username) VALUES('".$uuid."','".$data[1]."@bi.bib.de','".utf8_encode($data[3])."','".utf8_encode($data[2])."','".$data[1]."')";
+		$this->querySR($sql);
+		
+		echo "Nutzer ".$data[1]." angelegt!<br/>";
+	}
+	
+	//Register class
+	public function regClass($data)
+	{
+		$uuid = $this->createUUID();
+		$sql = "INSERT INTO CLASS(ID, name) VALUES('".$uuid."','".$data."')";
+		$this->querySR($sql);
+		
+		echo "Klasse ".$data." angelegt!<br/>";
+	}
+	
+	//Assigns a user to a specific group
+	public function setGroup($userdata, $group)
+	{
+		$uid = $this->getUID($userdata[1]);
+		$cid = $this->getCID($userdata[1]);
+		$sql = "";
+		
+		switch($group)
+		{
+			case "STUDENT": $sql = "INSERT INTO STUDENT (USERID,CLASSID) VALUES('".$uid."','".$cid."')";
+				break;
+			case "INSTRUCTOR": $sql = "INSERT INTO INSTRUCTOR (USERID) VALUES('".$uid."')";
+				break;
+			default: echo "Error at setGroup!";
+		}
+		echo $sql;
+		
+		$this->querySR($sql);
+		
+		echo "Nutzer ".$userdata[1]." zu Gruppe ".$group." hinzugefuegt!<br/>";	
+		
+	}
+	
+=======
   
+>>>>>>> 550a8d1ec8d0ca8f98c3fad980a66a756ec1577f
 }

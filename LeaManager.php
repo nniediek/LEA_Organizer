@@ -39,6 +39,13 @@ class LeaManager
 							<input type="submit" id="add_lea" name="add" value="LEA hinzuf&uuml;gen" class="button_100">
 					
 					</form>
+					<form method="post" enctype="multipart/form-data">
+					  <label>Upload .csv Schülerdatei: 					
+						<input name="file" type="file" size="50" accept="text/*"> 
+					  </label>  
+					  <input type="hidden" name="do" value="uploadCSV">
+					  <input type="submit" name="Import" value="Upload"/>
+					</form>
 						<div class="LEAcontainer">';
 						
 		foreach($res as $row)
@@ -283,6 +290,12 @@ class LeaManager
                                 </div>
                             ';
 	}
+	
+	public function uploadCSV(){
+		
+			$this->db->uploadCSV();
+		
+	}    
     
 	public function showLeaStatus(){
         
@@ -444,6 +457,8 @@ class LeaManager
 	public function validateCreateLEA(){
          foreach ($this->labels as $index => $value) {
 			
+<<<<<<< HEAD
+=======
             if (!isset($_POST[$index]) || empty($_POST[$index])) {
                 $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
 			}	
@@ -460,6 +475,30 @@ class LeaManager
                 $this->validData[$index] =  filter_input(INPUT_POST, $index, FILTER_DEFAULT);
             }
 		 }
+			count($this->errors) > 0 ? $this->showCreateLea() : $this->saveLEA();
+    }
+	
+	public function validateUpdateLEA(){
+         foreach ($this->labels as $index => $value) {
+			
+>>>>>>> 550a8d1ec8d0ca8f98c3fad980a66a756ec1577f
+            if (!isset($_POST[$index]) || empty($_POST[$index])) {
+                $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
+			}	
+			else{
+			 
+				if(isset($_POST['selectedClasses'])){
+					// adding selectedClasses array to validData array
+					$this->validData['selectedClasses'] = array();
+					// adding each selected class to selectedClasses array
+					foreach($_POST['selectedClasses'] as $class){
+						array_push($this->validData['selectedClasses'] , $class);
+					}	
+				}
+                $this->validData[$index] =  filter_input(INPUT_POST, $index, FILTER_DEFAULT);
+            }
+		 }
+<<<<<<< HEAD
 			count($this->errors) > 0 ? $this->showCreateLea() : $this->saveLEA();
     }
 	
@@ -485,6 +524,11 @@ class LeaManager
 			count($this->errors) > 0 ? $this->showUpdateLEA() : $this->updateLEA();
     }
 	
+=======
+			count($this->errors) > 0 ? $this->showUpdateLEA() : $this->updateLEA();
+    }
+	
+>>>>>>> 550a8d1ec8d0ca8f98c3fad980a66a756ec1577f
 	public function validateAddMilestone(){
 		
 		 foreach ($this->labelsMilestone as $index => $value) {
