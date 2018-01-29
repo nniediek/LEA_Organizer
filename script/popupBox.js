@@ -29,8 +29,12 @@ $(document).ready(function() {
 			else{
 				document.getElementById("popupTitle").innerHTML = "Beschreibung bearbeiten";
 			}
-			document.getElementById("sqlTable").value = split[1];
-			document.getElementById("sqlColumn").value = title;
+			
+			if (document.getElementById("sqlTable") != null)
+				document.getElementById("sqlTable").value = split[1];
+			
+			if (document.getElementById("sqlColumn") != null)
+				document.getElementById("sqlColumn").value = title;
 			
 			var textArea = document.getElementById(title + "BigText");
 			textArea.style.display = "block";

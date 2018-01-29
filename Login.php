@@ -15,12 +15,12 @@ class Login
 
     public function showLogin()
     {
+        var_dump($_POST);
     
         echo '<div id="login">
 				<img src="img/logo.png" class="logo">';
 
-        // if wrong username/password was wrong show error message
-		if (isset($_SESSION["error"])) {
+        if (isset($_SESSION["error"])) {
             echo '<h2 style="color: red">Falsche Benutzerdaten </h2>';
         }
 
@@ -44,6 +44,8 @@ class Login
 			<hr>
 			<a href="?controller=Login&do=forceLoginLeaManager">FORCE LOGIN LEAManager</a>
 			<hr>
+			<a href="?controller=Login&do=forceLoginInstructor">FORCE LOGIN Instructor</a>
+			<hr>
 		</div>';
     }
 
@@ -59,13 +61,12 @@ class Login
         $ldap_port = 389;
 
 
-        // connect to the ldap
-		if ($connect = ldap_connect($ldap_address, $ldap_port)) {
-            // connection success
+        if ($connect = ldap_connect($ldap_address, $ldap_port)) {
+            // Verbindung erfolgreich
             ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, 3);
             ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
 
-            // authendification of the user -- user and pw shouldn't be null
+            // Authentifizierung des Benutzers -- pw und username dürfen nicht null sein, da ldap_bind sonst nicht richtig läuft
             if (@$bind = ldap_bind($connect, $domain . "\\" . $username, $pw) && $pw != null && $username != null) {
 
                 $user = $this->db->selectUserByUsername($username);
@@ -92,13 +93,10 @@ class Login
                             $controller = "Student";
                             break;
                     }
-                    
-					// unset error after successful login
-					if (isset($_SESSION["error"])) {
+                    if (isset($_SESSION["error"])) {
                         unset($_SESSION["error"]);
                     }
 
-					// call showHome after login
                     header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=' . $controller . '&do=showHome');
                     die;
 
@@ -111,6 +109,7 @@ class Login
 
             }
 
+            //echo $_SESSION["group"];
         }
     }
 
@@ -122,9 +121,18 @@ class Login
          die;
 	}
 	
-	// destroys session and returns to login screen
+		// for development reasons needed
+	function forceLoginInstructor(){
+		 $_SESSION["permission"] = 2;
+		 $_SESSION["username"] = "Forced Linstructor";
+		 $_SESSION["userID"] = 1;
+		 header('Location: ' . $_SERVER['PHP_SELF'] . '?controller=Instructor&do=showHome');
+         die;
+	}
+	
     function logoutUser()
     {
+
         if (isset($_SESSION["username"])) {
             session_destroy();
             $_SESSION = array();

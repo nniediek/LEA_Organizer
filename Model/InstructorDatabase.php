@@ -401,6 +401,52 @@ class InstructorDatabase extends Database
             }
         }
     }
+	
+	// returns all supervised teams of an instructor
+	public function getManagedTeams(){
+		$dbc = $this->linkDB_PDO();
+		
+		$sql = "SELECT * FROM PROJECT p WHERE  p.INSTRUCTORID = '" . $_SESSION["userID"] . "'";
 
+        try {
+            $stmt = $dbc->query($sql);
+        } catch (PDOException $e) {
+            echo "Fehler: " . $e;
+        }
 
+        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
+        $res = $stmt->fetchAll();
+		
+		return $res;
+	}
+	
+    public function getProjectByTeamID()
+    {
+        $sql = "SELECT * FROM PROJECT WHERE ID = '" . $_POST["team"] . "'";
+        return $this->querySR($sql);
+    }
+	
+    public function getProjectMembersByTeamID()
+    {
+        $sql = "SELECT STUDENTID FROM STUDENT_HAS_PROJECT WHERE PROJECTID='" . $_POST["team"] . "'";
+        return $this->queryMR($sql);
+    }
+
+    public function getMilestonesByProjectID()
+    {
+        $sql = "SELECT * FROM MILESTONE WHERE LEAID = (SELECT LEAID
+													   FROM PROJECT
+													   WHERE ID = '" . $_POST["team"] . "')";
+        return $this->queryMR($sql);
+    }
+	
+	//Check if there is already a file uploaded for a certain Milestone
+	public function checkFile($pid,$mid)
+	{
+		$sql = "SELECT ID FROM DOCUMENT WHERE PROJECTID ='".$pid."' AND MILESTONEID = '".$mid."'";
+		if(!$this->querySR($sql))
+			return false;
+		else
+			return true;
+	}
 }
