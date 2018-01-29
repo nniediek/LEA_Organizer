@@ -563,8 +563,7 @@ table {
     overflow: scroll;
 }
 
-/*-----------------------------popup Student--------------*/
-/*
+
 .bigTextArea{
 	width: 99%;
 	height: 80%;
@@ -573,12 +572,6 @@ table {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
 }
 
-.button{
-	margin-top: 10px;
-	height: 40px;
-	width: 20%;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
-}
 
 #dialogbox{
     display: none; 
@@ -632,10 +625,6 @@ table {
     font-weight: bold;
 }
 
-label,input{
-	display: block;
-}
-
 #deadline{
 	margin-left: 50%;
 
@@ -653,4 +642,3 @@ label,input{
 #title{
 	width: 40%;
 }
-*/

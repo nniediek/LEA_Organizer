@@ -6,7 +6,8 @@ class LeaManager
     private $db;
 	private $errors = array();
 	private $validData = array();
-	private $labels = array("from" => "Von", "till" => "Bis" ,"LeaID" => " " );
+	private $labels = array("from" => "Von", "till" => "Bis"  );
+	private $labelsU = array("from" => "Von", "till" => "Bis"  ,"LeaID" => " "  );
 	private $labelsMilestone = array("deadline" => "Abgabetermin" , "description" => "Beschreibung" , "LeaID" => " ");
 	
     public function __construct()
@@ -290,12 +291,6 @@ class LeaManager
                                 </div>
                             ';
 	}
-	
-	public function uploadCSV(){
-		
-			$this->db->uploadCSV();
-		
-	}    
     
 	public function showLeaStatus(){
         
@@ -409,6 +404,12 @@ class LeaManager
 				</div>	
 			</div>';
 	}
+	
+		public function uploadCSV(){
+		
+			$this->db->uploadCSV();
+		
+	}  
 
     public function updateLEA(){
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
@@ -424,7 +425,7 @@ class LeaManager
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
-		}	
+		}
 		$ID = $this->db->writeLEA($this->validData);
 		$_POST['LeaID'] = $ID;
 		$this->showUpdateLEA();
@@ -457,8 +458,6 @@ class LeaManager
 	public function validateCreateLEA(){
          foreach ($this->labels as $index => $value) {
 			
-<<<<<<< HEAD
-=======
             if (!isset($_POST[$index]) || empty($_POST[$index])) {
                 $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
 			}	
@@ -479,31 +478,7 @@ class LeaManager
     }
 	
 	public function validateUpdateLEA(){
-         foreach ($this->labels as $index => $value) {
-			
->>>>>>> 550a8d1ec8d0ca8f98c3fad980a66a756ec1577f
-            if (!isset($_POST[$index]) || empty($_POST[$index])) {
-                $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
-			}	
-			else{
-			 
-				if(isset($_POST['selectedClasses'])){
-					// adding selectedClasses array to validData array
-					$this->validData['selectedClasses'] = array();
-					// adding each selected class to selectedClasses array
-					foreach($_POST['selectedClasses'] as $class){
-						array_push($this->validData['selectedClasses'] , $class);
-					}	
-				}
-                $this->validData[$index] =  filter_input(INPUT_POST, $index, FILTER_DEFAULT);
-            }
-		 }
-<<<<<<< HEAD
-			count($this->errors) > 0 ? $this->showCreateLea() : $this->saveLEA();
-    }
-	
-	public function validateUpdateLEA(){
-         foreach ($this->labels as $index => $value) {
+         foreach ($this->labelsU as $index => $value) {
 			
             if (!isset($_POST[$index]) || empty($_POST[$index])) {
                 $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
@@ -524,11 +499,6 @@ class LeaManager
 			count($this->errors) > 0 ? $this->showUpdateLEA() : $this->updateLEA();
     }
 	
-=======
-			count($this->errors) > 0 ? $this->showUpdateLEA() : $this->updateLEA();
-    }
-	
->>>>>>> 550a8d1ec8d0ca8f98c3fad980a66a756ec1577f
 	public function validateAddMilestone(){
 		
 		 foreach ($this->labelsMilestone as $index => $value) {

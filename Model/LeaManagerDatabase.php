@@ -260,12 +260,12 @@ class LeaManagerDatabase extends Database
 	}
     
     public function getLeaByID($LeaID){
-        /*$sql = "SELECT *
+        $sql = "SELECT *
                 FROM LEA
                 WHERE ID = '".$LeaID."'";
-        return $this->querySR($sql); */
+        return $this->querySR($sql); 
 		
-		try {
+	/*	try {
 			$db = $this->linkDB_PDO();
 		} catch(PDOException $e) {
 			echo "Fehler bei der Verbindung: " . $e->getMessage();
@@ -282,7 +282,7 @@ class LeaManagerDatabase extends Database
 		$result = $stmt->fetch();
 		
 		$db = null;
-		return count($stmt) == 1 ? $result : false;
+		return count($stmt) == 1 ? $result : false; */
     }
     
     public function getClassesByLeaID($LeaID){
@@ -399,7 +399,6 @@ class LeaManagerDatabase extends Database
 							 
 		return $this->queryMR($sql);
 	}
-<<<<<<< HEAD
     
     public function uploadCSV()
 	{		
@@ -526,8 +525,5 @@ class LeaManagerDatabase extends Database
 		echo "Nutzer ".$userdata[1]." zu Gruppe ".$group." hinzugefuegt!<br/>";	
 		
 	}
-	
-=======
-  
->>>>>>> 550a8d1ec8d0ca8f98c3fad980a66a756ec1577f
+
 }
