@@ -12,6 +12,7 @@ class LeaManager
 	
     public function __construct()
     {
+		// check permission level
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			return;
 		}
@@ -20,10 +21,13 @@ class LeaManager
 	
 	public function showHome(){
 		
+		// check permission level
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
+		
+		// get all LEAs from the db
 		$res = $this->db->getLEAs();
         
 		include 'header.php';		
@@ -48,7 +52,8 @@ class LeaManager
 					  <input type="submit" name="Import" value="Upload"/>
 					</form>
 						<div class="LEAcontainer">';
-						
+		
+		// echo all LEAs			
 		foreach($res as $row)
 		{
 			
@@ -81,12 +86,14 @@ class LeaManager
 	}
 	
 	public function showCreateLea(){
-    
+		
+    // check permission level
 	if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
 		
+		// get all classes from the db
         $res = $this->db->getClasses();
 		
 		include 'header.php';
@@ -165,14 +172,14 @@ class LeaManager
 		
         echo '<script type="text/javascript" src="script/editLEA.js"></script>';
 		
+		// check permission level
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
 		
-
+		// get everything needed
 		$Lea = $this->db->getLeaByID($_POST['LeaID']);
-		//var_dump($Lea);
         $classesTotal = $this->db->getClasses();
         $classesSelected = $this->db->getClassesByLeaID($Lea->ID);
         $Milestones = $this->db->getMilestones($Lea->ID);
@@ -411,16 +418,17 @@ class LeaManager
 		
 	}  
 
+	// updates a LEA
     public function updateLEA(){
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
-       // $this->db->updateLEA($_POST);
         $this->db->updateLEA($this->validData);
         $this->showHome();
     }
 	
+	 // create a LEA
     public function saveLEA(){  
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
@@ -431,13 +439,13 @@ class LeaManager
 		$this->showUpdateLEA();
 	}
     
+	// add milestone to a LEA
     public function addMilestone(){
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
-        //$this->db->updateLEA($_POST);
-        //$this->db->writeMileStone($_POST);
+
         $this->db->writeMileStone($this->validData);
         $this->showUpdateLea();
     }
