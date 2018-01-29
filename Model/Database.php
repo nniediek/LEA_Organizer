@@ -9,6 +9,7 @@ abstract class Database
     private $LINK_NAME = "mysqlbi.pb.bib.de";
     private $USER = "ibd2h16abo";
     private $PW = "7zyp4Tq6";
+    
 
 
     public function __construct()

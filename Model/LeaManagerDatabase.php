@@ -7,20 +7,89 @@ class LeaManagerDatabase extends Database
     }
 
     public function getLEAs(){
+		/*
         $sql = "SELECT * FROM LEA ORDER BY startdate";
         return $this->queryMR($sql);
-    }
-    
+		*/
+		
+		try {
+			$db = $this->linkDB_PDO();
+		} catch(PDOException $e) {
+			echo "Fehler bei der Verbindung: " . $e->getMessage();
+			
+		}
+		
+		$sql = "SELECT * FROM  LEA order by startdate desc"  ;
+		$stmt = $db->prepare($sql);
+		$stmt->execute();
+		
+		$stmt->setFetchMode(\PDO::FETCH_OBJ);
+     
+		$result = array();
+        while ($row = $stmt->fetch()) {
+           $result[] = $row;
+        }
+		
+		$db = null;
+		return count($stmt)> 0 ? $result : false;	
+	
+	}
+	
     public function getClasses()
     {
+		/*
         $sql = "SELECT * FROM CLASS ORDER BY name";
 		return $this->queryMR($sql);
+		*/
+		try {
+			$db = $this->linkDB_PDO();
+		} catch(PDOException $e) {
+			echo "Fehler bei der Verbindung: " . $e->getMessage();
+			
+		}
+		
+		$sql = "SELECT * FROM CLASS ORDER BY name";
+		$stmt = $db->prepare($sql);
+		$stmt->execute();
+		
+		$stmt->setFetchMode(\PDO::FETCH_OBJ);
+     
+		$result = array();
+        while ($row = $stmt->fetch()) {
+           $result[] = $row;
+        }
+		
+		$db = null;
+		return count($stmt)> 0 ? $result : false;	
     }
     
     public function getMilestones($LeaID){
-		
+		/*
 		$sql = "SELECT * FROM MILESTONE WHERE LEAID = '".$LeaID."'";
 		return $this->queryMR($sql);
+		*/
+		
+		try {
+			$db = $this->linkDB_PDO();
+		} catch(PDOException $e) {
+			echo "Fehler bei der Verbindung: " . $e->getMessage();
+			
+		}
+		
+		$sql = "SELECT * FROM MILESTONE WHERE LEAID = :LeaID ";
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':LeaID', $LeaID);		
+		$stmt->execute();
+		
+		$stmt->setFetchMode(\PDO::FETCH_OBJ);    
+		$result = array();
+        while ($row = $stmt->fetch()) {
+           $result[] = $row;
+        }
+		
+		$db = null;
+		return count($stmt)> 0 ? $result : false;
+		
 	}
     
     public function writeMilestone($postArray)
@@ -52,9 +121,7 @@ class LeaManagerDatabase extends Database
             $stmt->bindParam(':deadline', $deadline);
             $stmt->bindParam(':LEAID', $LEAID);
             $stmt->execute();
-            //problem
-            $_POST['controller'] = 'LeaManager';
-            $_POST['do'] = 'editLEA';
+           
         }
     }
     public function writeLEA($postArray)
@@ -145,53 +212,120 @@ class LeaManagerDatabase extends Database
             
             foreach($postArray['selectedClasses'] as $class){
                 $sql = "INSERT INTO LEA_HAS_CLASS (LEAID, CLASSID) VALUES ('".$ID."', (SELECT ID FROM CLASS WHERE name = '".$class."'));";
-                
-            try{
-				$db->query($sql);
-			}  
-			
-			catch(Exception $e)
-			{
-				$e->getMessage();
-				echo 'crashed';
-			}
+					
+				try{
+					$db->query($sql);
+				}  
+				
+				catch(Exception $e)
+				{
+					$e->getMessage();
+					echo 'crashed';
+				}
             }
-            
-            
 		}
 	}
     
 	
 	public function getLeaID($UserID){	
+		/*
 		$sql = "SELECT LEAID 
 			    FROM LEA_HAS_CLASS 
 			    WHERE CLASSID = (SELECT CLASSID 
 								 FROM STUDENT 
 								 WHERE USERID = '".$UserID."')";
-		return $this->querySR($sql);	
+		return $this->querySR($sql);
+		*/
+
+		
+		try {
+			$db = $this->linkDB_PDO();
+		} catch(PDOException $e) {
+			echo "Fehler bei der Verbindung: " . $e->getMessage();
+			
+		}
+		$sql = "SELECT LEAID 
+			    FROM LEA_HAS_CLASS 
+			    WHERE CLASSID = (SELECT CLASSID 
+								 FROM STUDENT 
+								 WHERE USERID = :UserID)";
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':UserID', $UserID);		
+		$stmt->execute();
+		
+		$stmt->setFetchMode(\PDO::FETCH_OBJ);    
+		$result = $stmt->fetch();
+		$db = null;
+		return count($stmt) == 1 ? $result : false;
 	}
     
     public function getLeaByID($LeaID){
-        $sql = "SELECT *
+        /*$sql = "SELECT *
                 FROM LEA
                 WHERE ID = '".$LeaID."'";
-        return $this->querySR($sql);
+        return $this->querySR($sql); */
+		
+		try {
+			$db = $this->linkDB_PDO();
+		} catch(PDOException $e) {
+			echo "Fehler bei der Verbindung: " . $e->getMessage();
+			
+		}
+		$sql = "SELECT *
+                FROM LEA
+                WHERE ID = :LeaID";
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':LeaID', $LeaID);		
+		$stmt->execute();
+		
+		$stmt->setFetchMode(\PDO::FETCH_OBJ);   
+		$result = $stmt->fetch();
+		
+		$db = null;
+		return count($stmt) == 1 ? $result : false;
     }
     
     public function getClassesByLeaID($LeaID){
-        $sql = "SELECT * 
+      /*  $sql = "SELECT * 
                 FROM CLASS 
                 WHERE ID IN (SELECT CLASSID 
                              FROM LEA_HAS_CLASS 
                              WHERE LEAID = '".$LeaID."')";
         
-        return $this->queryMR($sql);
+        return $this->queryMR($sql);*/
+		
+		
+		try {
+			$db = $this->linkDB_PDO();
+		} catch(PDOException $e) {
+			echo "Fehler bei der Verbindung: " . $e->getMessage();
+			
+		}
+		
+		$sql = "SELECT * 
+                FROM CLASS 
+                WHERE ID IN (SELECT CLASSID 
+                             FROM LEA_HAS_CLASS 
+                             WHERE LEAID = :LeaID)";
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':LeaID', $LeaID);		
+		$stmt->execute();
+		
+		$stmt->setFetchMode(\PDO::FETCH_OBJ);    
+		$result = array();
+        while ($row = $stmt->fetch()) {
+           $result[] = $row;
+        }
+		
+		$db = null;
+		return count($stmt)> 0 ? $result : false;
+		
     }
 	
 	//--------------Lea Status--------------
 	
 	public function getTeamless($LeaID){
-		$sql = "SELECT firstname, lastname
+		/*$sql = "SELECT firstname, lastname
 				FROM USER
 				WHERE (ID NOT IN (SELECT STUDENTID
 								  FROM STUDENT_HAS_PROJECT) AND ID IN (SELECT USERID 
@@ -199,7 +333,35 @@ class LeaManagerDatabase extends Database
 																	   WHERE CLASSID IN (SELECT CLASSID 
 																						 FROM LEA_HAS_CLASS 
 																						 WHERE LEAID = '".$LeaID."')))";
-		return $this->queryMR($sql);																				 																					 
+		return $this->queryMR($sql);*/
+
+		try {
+			$db = $this->linkDB_PDO();
+		} catch(PDOException $e) {
+			echo "Fehler bei der Verbindung: " . $e->getMessage();
+			
+		}
+		
+		$sql = "SELECT firstname, lastname
+				FROM USER
+				WHERE (ID NOT IN (SELECT STUDENTID
+								  FROM STUDENT_HAS_PROJECT) AND ID IN (SELECT USERID 
+																	   FROM STUDENT 
+																	   WHERE CLASSID IN (SELECT CLASSID 
+																						 FROM LEA_HAS_CLASS 
+																						 WHERE LEAID = :LeaID)))";
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(':LeaID', $LeaID);		
+		$stmt->execute();
+		
+		$stmt->setFetchMode(\PDO::FETCH_OBJ);    
+		$result = array();
+        while ($row = $stmt->fetch()) {
+           $result[] = $row;
+        }
+		
+		$db = null;
+		return count($stmt)> 0 ? $result : false;
 	}
 	
 	public function getDocsForMilestone($MilestoneID){

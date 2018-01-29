@@ -6,12 +6,11 @@ class LeaManager
     private $db;
 	private $errors = array();
 	private $validData = array();
-	private $labels = array("from" => "Von", "till" => "Bis" );
-	private $labelsMilestone = array("deadline" => "Abgabetermin" , "description" => "Beschreibung");
+	private $labels = array("from" => "Von", "till" => "Bis" ,"LeaID" => " " );
+	private $labelsMilestone = array("deadline" => "Abgabetermin" , "description" => "Beschreibung" , "LeaID" => " ");
 	
     public function __construct()
     {
-		// check permission level
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			return;
 		}
@@ -20,13 +19,10 @@ class LeaManager
 	
 	public function showHome(){
 		
-		// check permission level
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
-		
-		// get all LEAs from the db
 		$res = $this->db->getLEAs();
         
 		include 'header.php';		
@@ -44,8 +40,7 @@ class LeaManager
 					
 					</form>
 						<div class="LEAcontainer">';
-		
-		// echo all LEAs		
+						
 		foreach($res as $row)
 		{
 			
@@ -53,7 +48,7 @@ class LeaManager
 				<div class="LEA">
 					<form method="POST">
 						<p>'.$row->title.'</p>
-						<p class="date">&lt;'.$row->startdate.' - '.$row->enddate.'&gt;</p>
+						<!--<p class="date">&lt;'.$row->startdate.' - '.$row->enddate.'&gt;</p>-->
 						<div class="buttons">
                             <input type="hidden" name="controller" value="LeaManager"/>
 							<input type="hidden" name="do" value="showUpdateLea"/>
@@ -79,13 +74,11 @@ class LeaManager
 	
 	public function showCreateLea(){
     
-	// check permission level
 	if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
 		
-		// get all classes from the db
         $res = $this->db->getClasses();
 		
 		include 'header.php';
@@ -95,6 +88,7 @@ class LeaManager
                                 <input type="hidden" name="do" value="showHome"/>
 								<input type="submit" class="button_m floatR" id="showHome" value="Zur&uuml;ck"/>
                                 </form>
+								
 								<div id="addLeaDiv">			
 									<form id="addLeaForm" method="POST">
 										<h1 id="title">LEA Titel</h1>
@@ -106,9 +100,7 @@ class LeaManager
 										</div>
 										<div id="classes">
 												<select id="aClasses" class="LeaFormLeft" size="3" multiple="multiple">';
-                                                    
-													// show all classes
-													foreach($res as $row) 
+                                                    foreach($res as $row) 
                                                     {
                                                        echo'
                                                             <option :selected>'.$row->name.'</option>
@@ -132,13 +124,19 @@ class LeaManager
 											<div class="div40 floatR">
 												Bis:<br/><input type="date" id="till" name="till"/>
 											</div>
-										</div>
+										</div>';
+										if(isset($this->errors['till'])) {
+										echo '<label class="errorMsg">' . $this->errors['till'] . '</label><br>';
+											}
 										
-										<div id="milestones">
+										if(isset($this->errors['from'])) {
+										echo '<label class="errorMsg">' . $this->errors['from'] . '</label><br>';
+											}	
+		echo'								<div id="milestones">
 											<div id="ms_left">
-												<select id="ms_list" class="LeaFormLeft" size="3">';
-                                              
-        echo'
+												<select id="ms_list" class="LeaFormLeft" size="3">
+                                                
+        
                                                 
 												</select>
 											</div>
@@ -159,16 +157,15 @@ class LeaManager
 		
         echo '<script type="text/javascript" src="script/editLEA.js"></script>';
 		
-		// check permission level
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
 		
 
-		// get everything needed
 		$Lea = $this->db->getLeaByID($_POST['LeaID']);
-		$classesTotal = $this->db->getClasses();
+		//var_dump($Lea);
+        $classesTotal = $this->db->getClasses();
         $classesSelected = $this->db->getClassesByLeaID($Lea->ID);
         $Milestones = $this->db->getMilestones($Lea->ID);
 		$today = date("d-m-Y");
@@ -193,15 +190,16 @@ class LeaManager
 										</div>
 										<div id="classes">
 												<select id="aClasses" class="LeaFormLeft" size="3" multiple="multiple">';
-                                                    // show classes
-													foreach($classesTotal as $row) 
+                                                    foreach($classesTotal as $row) 
                                                     {
                                                         $count=0;
                                                         foreach($classesSelected as $row2){
+															//check wether this class belongs to this LEA
                                                             if($row->ID == $row2->ID){
                                                                 $count++;
                                                             }
                                                         }
+														//if class does not yet belong to this LEA 
                                                         if($count == 0){
                                                             echo '<option>'.$row->name.'</option>';
                                                         }
@@ -213,9 +211,8 @@ class LeaManager
                                                     <input type="button" id="delClass" class="button_100 floatL" value="Klasse L&ouml;schen" style="display: none;"/>
                                                 </div>
 												<select name="selectedClasses[ ]" id="rClasses" class="LeaFormRight" size="3" multiple="multiple">';
-                                                
-												// all selected classes
-												foreach($classesSelected as $row2)
+												//only classes that already belong to this LEA 
+                                                foreach($classesSelected as $row2)
                                                 {
                                                     echo'
                                                         <option>'.$row2->name.'</option>
@@ -233,29 +230,33 @@ class LeaManager
 											<div class="div40 floatR">
 												Bis:<br/><input type="date" id="till" name="till" value="'.$Lea->enddate.'"/>
 											</div>
-										</div>
+										</div>';
+										if(isset($this->errors['till'])) {
+										echo '<label class="errorMsg">' . $this->errors['till'] . '</label><br>';
+											}
 										
-										<div id="milestones">
+										if(isset($this->errors['from'])) {
+										echo '<label class="errorMsg">' . $this->errors['from'] . '</label><br>';
+											}	
+		echo'								<div id="milestones">
 											<div id="ms_left">
                                             <select id="ms_list" class="LeaFormLeft" size="3">';
-                                            
-											// show milestones
-											foreach($Milestones as $row){
+											
+                                            foreach($Milestones as $row){
                                                 echo'<option>'.$row->description.'</option>';
                                             }
-        echo'                               
-
-                                            </select>
+        echo'                                    </select>
 											</div>
 											<div id="ms_right">
 												<input type="button" id="AddMilestone" class="button_100_100 leasubmit" value="Meilenstein hinzuf&uuml;gen"/>
 											</div>
 										</div>
 										<input type="hidden" name="controller" value="LeaManager"/>
-										<input type="hidden" name="do" value="updateLEA"/>
+										<!--<input type="hidden" name="do" value="updateLEA"/>-->
+										<input type="hidden" name="do" value="validateUpdateLEA"/>
                                         <input type="hidden" name="LeaID" value="'.$Lea->ID.'"/>
 										<input type="submit" class="button_m leasubmit" value="Aktualisieren" id="saveLEA"/>
-									
+								</form>	
 									
 								</div>
                                 
@@ -263,7 +264,7 @@ class LeaManager
 
                             <div id="dialogbox2">	
                                 <div id="dialogboxcontent2">
-                                    
+                                    <form method="POST">
                                         <span class="close2">close</span>
 
                                         <label id="deadlineId" for="deadline">Abgabetermin:</label>
@@ -330,7 +331,7 @@ class LeaManager
 					</tr>';
 						
 		foreach($Milestones as $row)
-		{	
+		{												           // c is count(ID) alias from SQL	
 			$enteredDocs = $this->db->getDocsForMilestone($row->ID)->c;
 			
 			echo'<tr class="ms_table_row">
@@ -352,6 +353,7 @@ class LeaManager
 		{
 			$pid = $row->ID;
 			$pmembers = $this->db->getProjectMembers($pid);
+														// c is count(ID) alias from SQL 
 			$docCountProject = $this->db->getDocumentCount($pid)->c;
 			
 			echo'<tr class="teams_table_row">
@@ -394,19 +396,18 @@ class LeaManager
 				</div>	
 			</div>';
 	}
-	
-	// updates a LEA
+
     public function updateLEA(){
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
-        $this->db->updateLEA($_POST);
+       // $this->db->updateLEA($_POST);
+        $this->db->updateLEA($this->validData);
         $this->showHome();
     }
 	
-    // create a LEA
-	public function saveLEA(){  
+    public function saveLEA(){  
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
@@ -416,14 +417,14 @@ class LeaManager
 		$this->showUpdateLEA();
 	}
     
-	// add milestone to a LEA
     public function addMilestone(){
 		if (!isset($_SESSION["permission"]) || $_SESSION["permission"] != 1 ) {
 			echo "<br>no Permission to LeaManager";
 			return;
 		}
-        $this->db->updateLEA($_POST);
-        $this->db->writeMileStone($_POST);
+        //$this->db->updateLEA($_POST);
+        //$this->db->writeMileStone($_POST);
+        $this->db->writeMileStone($this->validData);
         $this->showUpdateLea();
     }
 	
@@ -441,15 +442,11 @@ class LeaManager
 	}
 	
 	public function validateCreateLEA(){
-				
-		
          foreach ($this->labels as $index => $value) {
 			
             if (!isset($_POST[$index]) || empty($_POST[$index])) {
                 $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
 			}	
-			 
-				
 			else{
 			 
 				if(isset($_POST['selectedClasses'])){
@@ -460,15 +457,32 @@ class LeaManager
 						array_push($this->validData['selectedClasses'] , $class);
 					}	
 				}
-				
-			   
                 $this->validData[$index] =  filter_input(INPUT_POST, $index, FILTER_DEFAULT);
-                
             }
 		 }
-			
 			count($this->errors) > 0 ? $this->showCreateLea() : $this->saveLEA();
-		
+    }
+	
+	public function validateUpdateLEA(){
+         foreach ($this->labels as $index => $value) {
+			
+            if (!isset($_POST[$index]) || empty($_POST[$index])) {
+                $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
+			}	
+			else{
+			 
+				if(isset($_POST['selectedClasses'])){
+					// adding selectedClasses array to validData array
+					$this->validData['selectedClasses'] = array();
+					// adding each selected class to selectedClasses array
+					foreach($_POST['selectedClasses'] as $class){
+						array_push($this->validData['selectedClasses'] , $class);
+					}	
+				}
+                $this->validData[$index] =  filter_input(INPUT_POST, $index, FILTER_DEFAULT);
+            }
+		 }
+			count($this->errors) > 0 ? $this->showUpdateLEA() : $this->updateLEA();
     }
 	
 	public function validateAddMilestone(){
@@ -478,11 +492,20 @@ class LeaManager
                 $this->errors[$index] = "Das " . $value . "-Feld muss bef&uuml;llt sein!<br>";
 			}	
 			else{
+				if(isset($_POST['selectedClasses'])){
+					// adding selectedClasses array to validData array
+					$this->validData['selectedClasses'] = array();
+					// adding each selected class to selectedClasses array
+					foreach($_POST['selectedClasses'] as $class){
+						array_push($this->validData['selectedClasses'] , $class);
+					}	
+				}
 				$this->validData[$index] =  filter_input(INPUT_POST, $index, FILTER_DEFAULT);
 			}	
 		 }
-		//	$this->validData['LEAID'] =  $_POST['LEAID'];	
-		count($this->errors) > 0 ? $this->updateLEA() : $this->addMilestone();
+			
+			var_dump($this->validData);
+		count($this->errors) > 0 ? $this->showUpdateLEA() : $this->addMilestone();
 		
 	}
 }
